@@ -24,7 +24,6 @@ import com.example.fitnessapp.screens.ExercisesScreen
 import com.example.fitnessapp.screens.HomeScreen
 import com.example.fitnessapp.screens.ProfileScreen
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomNavigationBar() {
     var navigationSelectedItem by remember {
@@ -41,11 +40,7 @@ fun BottomNavigationBar() {
                     NavigationBarItem(
                         selected = index == navigationSelectedItem,
                         label = {
-                            Text(navigationItem.label,
-                                Modifier,
-                                Color.White,
-                                TextUnit.Unspecified
-                            )
+                            Text(navigationItem.label)
                         },
                         icon = {
                             Icon(
