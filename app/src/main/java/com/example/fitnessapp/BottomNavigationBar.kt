@@ -2,7 +2,6 @@ package com.example.fitnessapp
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -14,15 +13,13 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.TextUnit
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.fitnessapp.screens.ExercisesScreen
-import com.example.fitnessapp.screens.HomeScreen
-import com.example.fitnessapp.screens.ProfileScreen
+import com.example.fitnessapp.exercises.ExercisesScreen
+import com.example.fitnessapp.home.HomeScreen
+import com.example.fitnessapp.profile.ProfileScreen
 
 @Composable
 fun BottomNavigationBar() {
@@ -36,7 +33,7 @@ fun BottomNavigationBar() {
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             NavigationBar {
-                BottomNavigationItem().bottomNavigationItems().forEachIndexed {index,navigationItem ->
+                BottomNavigationItem().bottomNavigationItems().forEachIndexed { index, navigationItem ->
                     NavigationBarItem(
                         selected = index == navigationSelectedItem,
                         label = {
@@ -65,19 +62,19 @@ fun BottomNavigationBar() {
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Screens.Home.route,
+            startDestination = Screen.Home.route,
             modifier = Modifier.padding(paddingValues = paddingValues)) {
-            composable(Screens.Exercises.route) {
+            composable(Screen.Exercises.route) {
                 ExercisesScreen(
                     navController
                 )
             }
-            composable(Screens.Home.route) {
+            composable(Screen.Home.route) {
                 HomeScreen(
                     navController
                 )
             }
-            composable(Screens.Profile.route) {
+            composable(Screen.Profile.route) {
                 ProfileScreen(
                     navController
                 )
