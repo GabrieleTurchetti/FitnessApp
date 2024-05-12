@@ -3,31 +3,29 @@ package com.example.fitnessapp
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardGrid(cards: List<CardCell>) {
+fun CardGrid(cards: List<CardItem>) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(10.dp),
@@ -38,18 +36,22 @@ fun CardGrid(cards: List<CardCell>) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(10.dp),
-                shape = RoundedCornerShape(15.dp)
+                shape = RoundedCornerShape(10.dp),
+                onClick = {
+                    cards[it].onCardItemClick(cards[it])
+                }
             ) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .aspectRatio(1f),
+                        .aspectRatio(1f)
+                        .background(Color.White),
                     contentAlignment = Alignment.BottomCenter
                 ) {
                     Image(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(15.dp),
+                            .padding(10.dp),
                         painter = painterResource(cards[it].imageId),
                         contentDescription = cards[it].name,
                         contentScale = ContentScale.Crop

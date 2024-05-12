@@ -1,7 +1,8 @@
 package com.example.fitnessapp
 
 sealed class Screen(val route : String) {
-    object Home : Screen("home_route")
-    object Exercises : Screen("exercises_route")
-    object Profile : Screen("profile_route")
+    data object Home : Screen("home")
+    data object Exercises : Screen("exercises")
+    data object Profile : Screen("profile")
+    data object MuscleGroup : Screen("exercises/{muscleGroupId}")
 }

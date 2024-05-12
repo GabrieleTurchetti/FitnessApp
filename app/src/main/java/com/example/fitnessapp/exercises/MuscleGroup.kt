@@ -1,108 +1,156 @@
 package com.example.fitnessapp.exercises
 
+import android.util.Log
 import androidx.annotation.DrawableRes
-import androidx.compose.ui.res.painterResource
-import com.example.fitnessapp.CardCell
+import com.example.fitnessapp.CardItem
 import com.example.fitnessapp.R
 
 sealed class MuscleGroup(
-    val name: String,
-    @DrawableRes val imageId: Int,
-    val exercises : List<Exercise>
+    override val id: String,
+    override val name: String,
+    @DrawableRes override val imageId: Int,
+    val exercises: List<Exercise>,
+    open val onMuscleGroupClick: (muscleGroup: CardItem) -> Unit
+) : CardItem(
+    id,
+    name,
+    imageId,
+    onMuscleGroupClick
 ) {
-    object Chest : MuscleGroup(
+    data class Chest(
+        override var onMuscleGroupClick: (muscleGroup: CardItem) -> Unit = {}
+    ) : MuscleGroup(
+        "chest",
         "Pettorali",
-        R.drawable.chest,
+        R.drawable.ic_chest,
         listOf(
-            Exercise("Barbell Bench Press", R.drawable.barbell_bench_press),
-            Exercise("Diamond Push Up", R.drawable.diamond_push_up),
-            Exercise("Dumbbell Fly", R.drawable.dumbbell_fly),
-            Exercise("High Cable Crossover", R.drawable.high_cable_crossover),
-            Exercise("Incline Dumbbell Press", R.drawable.incline_dumbbell_press),
-            Exercise("Pec Deck Fly", R.drawable.pec_deck_fly),
-            Exercise("Push Up", R.drawable.push_up)
-        )
+            Exercise("barbellBenchPress", "Barbell Bench Press", R.drawable.barbell_bench_press, {}),
+            Exercise("barbellBenchPress", "Diamond Push Up", R.drawable.diamond_push_up, {}),
+            Exercise("barbellBenchPress", "Dumbbell Fly", R.drawable.dumbbell_fly, {}),
+            Exercise("barbellBenchPress", "High Cable Crossover", R.drawable.high_cable_crossover, {}),
+            Exercise("barbellBenchPress", "Incline Dumbbell Press", R.drawable.incline_dumbbell_press, {}),
+            Exercise("barbellBenchPress", "Pec Deck Fly", R.drawable.pec_deck_fly, {}),
+            Exercise("barbellBenchPress", "Push Up", R.drawable.push_up, {})
+        ),
+        onMuscleGroupClick = onMuscleGroupClick
     )
-    object Shoulders : MuscleGroup(
+    data class Shoulders(
+        override var onMuscleGroupClick: (muscleGroup: CardItem) -> Unit = {}
+    ) : MuscleGroup(
+        "shoulders",
         "Spalle",
-        R.drawable.shoulders,
+        R.drawable.ic_shoulders,
         listOf(
-            Exercise("Alternating Dumbbell Front Raise", R.drawable.alternating_dumbbell_front_raise),
-            Exercise("Dumbbell Lateral Raise", R.drawable.dumbbell_lateral_raise),
-            Exercise("Dumbbell Reverse Fly", R.drawable.dumbbell_reverse_fly),
-            Exercise("Dumbbell Shoulder Press", R.drawable.dumbbell_shoulder_press)
-        )
+            Exercise("barbellBenchPress", "Alternating Dumbbell Front Raise", R.drawable.alternating_dumbbell_front_raise, {}),
+            Exercise("barbellBenchPress", "Dumbbell Lateral Raise", R.drawable.dumbbell_lateral_raise, {}),
+            Exercise("barbellBenchPress", "Dumbbell Reverse Fly", R.drawable.dumbbell_reverse_fly, {}),
+            Exercise("barbellBenchPress", "Dumbbell Shoulder Press", R.drawable.dumbbell_shoulder_press, {})
+        ),
+        onMuscleGroupClick = onMuscleGroupClick
     )
-    object Biceps : MuscleGroup(
+    data class Biceps(
+        override var onMuscleGroupClick: (muscleGroup: CardItem) -> Unit = {}
+    ) : MuscleGroup(
+        "biceps",
         "Bicipiti",
-        R.drawable.biceps,
+        R.drawable.ic_biceps,
         listOf(
-            Exercise("Concentration Curl", R.drawable.concentration_curl),
-            Exercise("Dumbbell Curl", R.drawable.dumbbell_curl),
-            Exercise("Hammer Curl", R.drawable.hammer_curl),
-            Exercise("Rope Bicep Curls", R.drawable.rope_bicep_curls),
-            Exercise("Z Bar Preacher Curl", R.drawable.z_bar_preacher_curl)
-        )
+            Exercise("barbellBenchPress", "Concentration Curl", R.drawable.concentration_curl, {}),
+            Exercise("barbellBenchPress", "Dumbbell Curl", R.drawable.dumbbell_curl, {}),
+            Exercise("barbellBenchPress", "Hammer Curl", R.drawable.hammer_curl, {}),
+            Exercise("barbellBenchPress", "Rope Bicep Curls", R.drawable.rope_bicep_curls, {}),
+            Exercise("barbellBenchPress", "Z Bar Preacher Curl", R.drawable.z_bar_preacher_curl, {})
+        ),
+        onMuscleGroupClick = onMuscleGroupClick
     )
-    object Triceps : MuscleGroup(
+    data class Triceps(
+        override var onMuscleGroupClick: (muscleGroup: CardItem) -> Unit = {}
+    ) : MuscleGroup(
+        "triceps",
         "Tricipiti",
-        R.drawable.triceps,
+        R.drawable.ic_triceps,
         listOf(
-            Exercise("Barbell Triceps Extension", R.drawable.barbell_triceps_extension),
-            Exercise("Dumbbell Kickback", R.drawable.dumbbell_kickback),
-            Exercise("Push Down", R.drawable.push_down),
-            Exercise("Seated Dumbbell Triceps Extension", R.drawable.seated_dumbbell_triceps_extension),
-            Exercise("Triceps Dips", R.drawable.triceps_dips)
-        )
+            Exercise("barbellBenchPress", "Barbell Triceps Extension", R.drawable.barbell_triceps_extension, {}),
+            Exercise("barbellBenchPress", "Dumbbell Kickback", R.drawable.dumbbell_kickback, {}),
+            Exercise("barbellBenchPress", "Push Down", R.drawable.push_down, {}),
+            Exercise("barbellBenchPress", "Seated Dumbbell Triceps Extension", R.drawable.seated_dumbbell_triceps_extension, {}),
+            Exercise("barbellBenchPress", "Triceps Dips", R.drawable.triceps_dips, {})
+        ),
+        onMuscleGroupClick = onMuscleGroupClick
     )
-    object Abs : MuscleGroup(
+    data class Abs(
+        override var onMuscleGroupClick: (muscleGroup: CardItem) -> Unit = {}
+    ) : MuscleGroup(
+        "abs",
         "Addominali",
-        R.drawable.abs,
+        R.drawable.ic_abs,
         listOf(
-            Exercise("Cross Crunch", R.drawable.cross_crunch),
-            Exercise("Crunch", R.drawable.crunch),
-            Exercise("Plank", R.drawable.plank)
-        )
+            Exercise("barbellBenchPress", "Cross Crunch", R.drawable.cross_crunch, {}),
+            Exercise("barbellBenchPress", "Crunch", R.drawable.crunch, {}),
+            Exercise("barbellBenchPress", "Plank", R.drawable.plank, {})
+        ),
+        onMuscleGroupClick = onMuscleGroupClick
     )
-    object Back : MuscleGroup(
+    data class Back(
+        override var onMuscleGroupClick: (muscleGroup: CardItem) -> Unit = {}
+    ) : MuscleGroup(
+        "back",
         "Schiena",
-        R.drawable.back,
+        R.drawable.ic_back,
         listOf(
-            Exercise("Dumbbell Row", R.drawable.dumbbell_row),
-            Exercise("Lat Pulldown", R.drawable.lat_pulldown),
-            Exercise("Pull Up", R.drawable.pull_up),
-            Exercise("T Bar Row", R.drawable.t_bar_row)
-        )
+            Exercise("barbellBenchPress", "Dumbbell Row", R.drawable.dumbbell_row, {}),
+            Exercise("barbellBenchPress", "Lat Pulldown", R.drawable.lat_pulldown, {}),
+            Exercise("barbellBenchPress", "Pull Up", R.drawable.pull_up, {}),
+            Exercise("barbellBenchPress", "T Bar Row", R.drawable.t_bar_row, {})
+        ),
+        onMuscleGroupClick = onMuscleGroupClick
     )
-    object Legs : MuscleGroup(
+    data class Legs(
+        override var onMuscleGroupClick: (muscleGroup: CardItem) -> Unit = {}
+    ) : MuscleGroup(
+        "legs",
         "Gambe",
-        R.drawable.legs,
+        R.drawable.ic_legs,
         listOf(
-            Exercise("Barbell Deadlift", R.drawable.barbell_deadlift),
-            Exercise("Barbell Romanian Deadlift", R.drawable.barbell_romanian_deadlift),
-            Exercise("Barbell Squat", R.drawable.barbell_squat),
-            Exercise("Dumbbell Bulgarian Split Squat", R.drawable.dumbbell_bulgarian_split_squat),
-            Exercise("Dumbbell Lunge", R.drawable.dumbbell_lunge),
-            Exercise("Leg Curl", R.drawable.leg_curl),
-            Exercise("Leg Extention", R.drawable.leg_extention),
-            Exercise("Leg Press", R.drawable.leg_press),
-            Exercise("Seated Leg Curl", R.drawable.seated_leg_curl)
-        )
+            Exercise("barbellBenchPress", "Barbell Deadlift", R.drawable.barbell_deadlift, {}),
+            Exercise("barbellBenchPress", "Barbell Romanian Deadlift", R.drawable.barbell_romanian_deadlift, {}),
+            Exercise("barbellBenchPress", "Barbell Squat", R.drawable.barbell_squat, {}),
+            Exercise("barbellBenchPress", "Dumbbell Bulgarian Split Squat", R.drawable.dumbbell_bulgarian_split_squat, {}),
+            Exercise("barbellBenchPress", "Dumbbell Lunge", R.drawable.dumbbell_lunge, {}),
+            Exercise("barbellBenchPress", "Leg Curl", R.drawable.leg_curl, {}),
+            Exercise("barbellBenchPress", "Leg Extention", R.drawable.leg_extention, {}),
+            Exercise("barbellBenchPress", "Leg Press", R.drawable.leg_press, {}),
+            Exercise("barbellBenchPress", "Seated Leg Curl", R.drawable.seated_leg_curl, {})
+        ),
+        onMuscleGroupClick = onMuscleGroupClick
     )
-    object Calves : MuscleGroup(
+    data class Calves(
+        override var onMuscleGroupClick: (muscleGroup: CardItem) -> Unit = {}
+    ) : MuscleGroup(
+        "calves",
         "Polpacci",
-        R.drawable.calves,
+        R.drawable.ic_calves,
         listOf(
-            Exercise("Dumbbell Calf Raise", R.drawable.dumbbell_calf_raise),
-            Exercise("Lever Seated Calf Raise", R.drawable.lever_seated_calf_raise)
-        )
+            Exercise("barbellBenchPress", "Dumbbell Calf Raise", R.drawable.dumbbell_calf_raise, {}),
+            Exercise("barbellBenchPress", "Lever Seated Calf Raise", R.drawable.lever_seated_calf_raise, {})
+        ),
+        onMuscleGroupClick = onMuscleGroupClick
     )
 
-    fun toCardCell(): CardCell {
-        return CardCell(
-            name,
-            imageId,
-            {}
-        )
+    companion object {
+        fun getClassFromId(id: String?) : List<Exercise>{
+
+            return when (id){
+                "chest" -> Chest().exercises
+                "shoulders" -> Shoulders().exercises
+                "biceps" -> Biceps().exercises
+                "triceps" -> Triceps().exercises
+                "abs" -> Abs().exercises
+                "back" -> Back().exercises
+                "legs" -> Legs().exercises
+                "calves" -> Calves().exercises
+                else -> emptyList()
+            }
+        }
     }
 }

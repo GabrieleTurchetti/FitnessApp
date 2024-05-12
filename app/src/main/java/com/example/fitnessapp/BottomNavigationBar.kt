@@ -14,10 +14,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.fitnessapp.exercises.ExercisesScreen
+import com.example.fitnessapp.exercises.musclegroup.MuscleGroupScreen
 import com.example.fitnessapp.home.HomeScreen
 import com.example.fitnessapp.profile.ProfileScreen
 
@@ -47,10 +50,12 @@ fun BottomNavigationBar() {
                         },
                         onClick = {
                             navigationSelectedItem = index
+
                             navController.navigate(navigationItem.route) {
                                 popUpTo(navController.graph.findStartDestination().id) {
                                     saveState = true
                                 }
+
                                 launchSingleTop = true
                                 restoreState = true
                             }
@@ -77,6 +82,15 @@ fun BottomNavigationBar() {
             composable(Screen.Profile.route) {
                 ProfileScreen(
                     navController
+                )
+            }
+            composable(
+                Screen.MuscleGroup.route,
+                arguments = listOf(navArgument("muscleGroupId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                MuscleGroupScreen(
+                    navController,
+                    backStackEntry.arguments?.getString("muscleGroupId")
                 )
             }
         }

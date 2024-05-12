@@ -15,10 +15,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.example.fitnessapp.CardGrid
+import com.example.fitnessapp.CardItem
 import com.example.fitnessapp.R
+import com.example.fitnessapp.Screen
 
 @Composable
-fun ExercisesScreen(navController: NavController) {
+fun ExercisesScreen(
+    navController: NavController
+) {
     Scaffold(
         topBar = {
             ExercisesTopAppBar()
@@ -28,15 +32,17 @@ fun ExercisesScreen(navController: NavController) {
                 modifier = Modifier.padding(padding),
                 color = MaterialTheme.colorScheme.background
             ) {
+                val onMuscleGroupClick = { muscleGroupId: String -> navController.navigate(Screen.Exercises.route + "/" + muscleGroupId) }
+
                 CardGrid(cards = listOf(
-                    MuscleGroup.Chest.toCardCell(),
-                    MuscleGroup.Shoulders.toCardCell(),
-                    MuscleGroup.Biceps.toCardCell(),
-                    MuscleGroup.Triceps.toCardCell(),
-                    MuscleGroup.Abs.toCardCell(),
-                    MuscleGroup.Back.toCardCell(),
-                    MuscleGroup.Legs.toCardCell(),
-                    MuscleGroup.Calves.toCardCell()
+                    MuscleGroup.Chest(onMuscleGroupClick = { muscleGroup -> onMuscleGroupClick(muscleGroup.id) }),
+                    MuscleGroup.Shoulders(onMuscleGroupClick = { muscleGroup -> onMuscleGroupClick(muscleGroup.id) }),
+                    MuscleGroup.Biceps(onMuscleGroupClick = { muscleGroup -> onMuscleGroupClick(muscleGroup.id) }),
+                    MuscleGroup.Triceps(onMuscleGroupClick = { muscleGroup -> onMuscleGroupClick(muscleGroup.id) }),
+                    MuscleGroup.Abs(onMuscleGroupClick = { muscleGroup -> onMuscleGroupClick(muscleGroup.id) }),
+                    MuscleGroup.Back(onMuscleGroupClick = { muscleGroup -> onMuscleGroupClick(muscleGroup.id) }),
+                    MuscleGroup.Legs(onMuscleGroupClick = { muscleGroup -> onMuscleGroupClick(muscleGroup.id) }),
+                    MuscleGroup.Calves(onMuscleGroupClick = { muscleGroup -> onMuscleGroupClick(muscleGroup.id) })
                 ))
             }
         }
