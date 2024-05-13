@@ -20,6 +20,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.fitnessapp.exercises.ExercisesScreen
+import com.example.fitnessapp.exercises.musclegroup.exercise.ExerciseScreen
 import com.example.fitnessapp.exercises.musclegroup.MuscleGroupScreen
 import com.example.fitnessapp.home.HomeScreen
 import com.example.fitnessapp.profile.ProfileScreen
@@ -90,7 +91,20 @@ fun BottomNavigationBar() {
             ) { backStackEntry ->
                 MuscleGroupScreen(
                     navController,
-                    backStackEntry.arguments?.getString("muscleGroupId")
+                    backStackEntry.arguments?.getString("muscleGroupId"),
+                )
+            }
+            composable(
+                Screen.Exercise.route,
+                arguments = listOf(
+                    navArgument("muscleGroupId") { type = NavType.StringType },
+                    navArgument("exerciseId") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                ExerciseScreen(
+                    navController,
+                    backStackEntry.arguments?.getString("muscleGroupId"),
+                    backStackEntry.arguments?.getString("exerciseId")
                 )
             }
         }

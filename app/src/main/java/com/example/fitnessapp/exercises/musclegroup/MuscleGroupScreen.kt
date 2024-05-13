@@ -11,7 +11,6 @@ import androidx.navigation.NavController
 import com.example.fitnessapp.CardGrid
 import com.example.fitnessapp.Screen
 import com.example.fitnessapp.exercises.ExercisesTopAppBar
-import com.example.fitnessapp.exercises.MuscleGroup
 
 @Composable
 fun MuscleGroupScreen(
@@ -27,8 +26,9 @@ fun MuscleGroupScreen(
                 modifier = Modifier.padding(padding),
                 color = MaterialTheme.colorScheme.background
             ) {
-                val onExerciseClick = { muscleGroupId: String -> navController.navigate(Screen.MuscleGroup.route + muscleGroupId) }
-                CardGrid(cards = MuscleGroup.getClassFromId(muscleGroupId))
+                CardGrid(cards = MuscleGroup.getExercisesFromId(muscleGroupId).map { exercise ->
+                    exercise.setOnExerciseClick({ navController.navigate(Screen.Exercises.route + "/" + muscleGroupId + "/" + exercise.id); Log.d("ID", "${muscleGroupId + exercise.id}")})
+                })
             }
         }
     )
