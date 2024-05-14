@@ -1,7 +1,7 @@
 package com.example.fitnessapp.exercises.musclegroup
 
 import androidx.annotation.DrawableRes
-import com.example.fitnessapp.CardItem
+import com.example.fitnessapp.components.CardItem
 import com.example.fitnessapp.R
 import com.example.fitnessapp.exercises.musclegroup.exercise.Exercise
 
@@ -10,7 +10,7 @@ sealed class MuscleGroup(
     override val name: String,
     @DrawableRes override val imageId: Int,
     val exercises: List<Exercise>,
-    open val onMuscleGroupClick: (CardItem?) -> Unit
+    open val onMuscleGroupClick: () -> Unit
 ) : CardItem(
     id,
     name,
@@ -18,7 +18,7 @@ sealed class MuscleGroup(
     onMuscleGroupClick
 ) {
     data class Chest(
-        override var onMuscleGroupClick: (CardItem?) -> Unit = {}
+        override var onMuscleGroupClick: () -> Unit = {}
     ) : MuscleGroup(
         "chest",
         "Pettorali",
@@ -35,7 +35,7 @@ sealed class MuscleGroup(
         onMuscleGroupClick = onMuscleGroupClick
     )
     data class Shoulders(
-        override var onMuscleGroupClick: (CardItem?) -> Unit = {}
+        override var onMuscleGroupClick: () -> Unit = {}
     ) : MuscleGroup(
         "shoulders",
         "Spalle",
@@ -49,7 +49,7 @@ sealed class MuscleGroup(
         onMuscleGroupClick = onMuscleGroupClick
     )
     data class Biceps(
-        override var onMuscleGroupClick: (CardItem?) -> Unit = {}
+        override var onMuscleGroupClick: () -> Unit = {}
     ) : MuscleGroup(
         "biceps",
         "Bicipiti",
@@ -64,7 +64,7 @@ sealed class MuscleGroup(
         onMuscleGroupClick = onMuscleGroupClick
     )
     data class Triceps(
-        override var onMuscleGroupClick: (CardItem?) -> Unit = {}
+        override var onMuscleGroupClick: () -> Unit = {}
     ) : MuscleGroup(
         "triceps",
         "Tricipiti",
@@ -79,7 +79,7 @@ sealed class MuscleGroup(
         onMuscleGroupClick = onMuscleGroupClick
     )
     data class Abs(
-        override var onMuscleGroupClick: (CardItem?) -> Unit = {}
+        override var onMuscleGroupClick: () -> Unit = {}
     ) : MuscleGroup(
         "abs",
         "Addominali",
@@ -92,7 +92,7 @@ sealed class MuscleGroup(
         onMuscleGroupClick = onMuscleGroupClick
     )
     data class Back(
-        override var onMuscleGroupClick: (CardItem?) -> Unit = {}
+        override var onMuscleGroupClick: () -> Unit = {}
     ) : MuscleGroup(
         "back",
         "Schiena",
@@ -106,7 +106,7 @@ sealed class MuscleGroup(
         onMuscleGroupClick = onMuscleGroupClick
     )
     data class Legs(
-        override var onMuscleGroupClick: (CardItem?) -> Unit = {}
+        override var onMuscleGroupClick: () -> Unit = {}
     ) : MuscleGroup(
         "legs",
         "Gambe",
@@ -125,7 +125,7 @@ sealed class MuscleGroup(
         onMuscleGroupClick = onMuscleGroupClick
     )
     data class Calves(
-        override var onMuscleGroupClick: (CardItem?) -> Unit = {}
+        override var onMuscleGroupClick: () -> Unit = {}
     ) : MuscleGroup(
         "calves",
         "Polpacci",

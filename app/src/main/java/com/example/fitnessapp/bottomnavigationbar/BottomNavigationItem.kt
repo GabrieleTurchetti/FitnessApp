@@ -1,4 +1,4 @@
-package com.example.fitnessapp
+package com.example.fitnessapp.bottomnavigationbar
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -6,6 +6,8 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import com.example.fitnessapp.R
+import com.example.fitnessapp.Screen
 
 data class BottomNavigationItem(
     val label : String = "",

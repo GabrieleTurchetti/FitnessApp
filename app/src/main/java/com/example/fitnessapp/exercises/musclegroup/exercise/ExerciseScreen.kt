@@ -26,6 +26,7 @@ fun ExerciseScreen(
     exerciseId: String?
 ) {
     val context = LocalContext.current
+
     val imageLoader = ImageLoader.Builder(context)
         .componentRegistry {
             if (SDK_INT >= 28) {
@@ -35,7 +36,7 @@ fun ExerciseScreen(
             }
         }
         .build()
-    Log.d("MUS", "${Exercise.getGifFromId(exerciseId = exerciseId)}")
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -46,7 +47,7 @@ fun ExerciseScreen(
             contentScale = ContentScale.Crop,
             painter = rememberImagePainter(
                 imageLoader = imageLoader,
-                data = Exercise.getGifFromId(exerciseId = exerciseId),
+                data = Exercise.getGifResourceFromId(exerciseId = exerciseId),
                 builder = {
                     size(OriginalSize)
                 }

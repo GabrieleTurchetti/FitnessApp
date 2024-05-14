@@ -1,6 +1,5 @@
-package com.example.fitnessapp
+package com.example.fitnessapp.components
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -39,7 +38,7 @@ fun CardGrid(cards: List<CardItem>) {
                     .padding(10.dp),
                 shape = RoundedCornerShape(10.dp),
                 onClick = {
-                    cards[it].onCardItemClick(cards[it])
+                    cards[it].onCardItemClick()
                 }
             ) {
                 Box(

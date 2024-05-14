@@ -1,4 +1,4 @@
-package com.example.fitnessapp
+package com.example.fitnessapp.bottomnavigationbar
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,6 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.fitnessapp.Screen
 import com.example.fitnessapp.exercises.ExercisesScreen
 import com.example.fitnessapp.exercises.musclegroup.exercise.ExerciseScreen
 import com.example.fitnessapp.exercises.musclegroup.MuscleGroupScreen
