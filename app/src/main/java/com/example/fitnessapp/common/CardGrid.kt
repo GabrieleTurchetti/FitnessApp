@@ -1,4 +1,4 @@
-package com.example.fitnessapp.components
+package com.example.fitnessapp.common
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

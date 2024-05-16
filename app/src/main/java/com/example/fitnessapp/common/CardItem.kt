@@ -1,4 +1,4 @@
-package com.example.fitnessapp.components
+package com.example.fitnessapp.common
 
 import androidx.annotation.DrawableRes
 

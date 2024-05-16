@@ -23,27 +23,27 @@ class ProfileSettings(
     }
 
     val getUsername: Flow<String?> = context.dataStore.data.map { preferences ->
-        preferences[USERNAME] ?: ""
+        preferences[USERNAME] ?: "Mario Rossi"
     }
 
     val getBirthDate: Flow<String?> = context.dataStore.data.map { preferences ->
-        preferences[BIRTH_DATE] ?: ""
+        preferences[BIRTH_DATE] ?: "01012000"
     }
 
     val getGender: Flow<String?> = context.dataStore.data.map { preferences ->
-        preferences[GENDER] ?: ""
+        preferences[GENDER] ?: "Maschio"
     }
 
     val getHeight: Flow<String?> = context.dataStore.data.map { preferences ->
-        preferences[HEIGHT] ?: ""
+        preferences[HEIGHT] ?: "175"
     }
 
     val getWeight: Flow<String?> = context.dataStore.data.map { preferences ->
-        preferences[WEIGHT] ?: ""
+        preferences[WEIGHT] ?: "70"
     }
 
     val getStepGoal: Flow<String?> = context.dataStore.data.map { preferences ->
-        preferences[STEP_GOAL] ?: ""
+        preferences[STEP_GOAL] ?: "1000"
     }
 
     suspend fun setUsername(name: String) {
