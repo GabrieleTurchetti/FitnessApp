@@ -1,8 +1,10 @@
 package com.example.fitnessapp.common
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -60,7 +63,9 @@ fun GroupBox(items: List<BoxItem>) {
 
     LazyColumn(
         modifier = Modifier
-            .background(Color.DarkGray, shape = RoundedCornerShape(10.dp))
+            .clip(shape = RoundedCornerShape(10.dp))
+            .background(Color.DarkGray)
+
     ) {
         itemsIndexed(items) { index, item ->
             when (item.getType()) {
@@ -90,7 +95,7 @@ fun BoxItem1(
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (item.content != null && item.content != "%i") {
-            var content by remember { mutableStateOf(TextFieldValue(item.content)) }
+            var content by remember { mutableStateOf(TextFieldValue(item.content!!)) }
 
             LaunchedEffect(isEnabled) {
                 if (isEnabled) {
@@ -105,7 +110,7 @@ fun BoxItem1(
             BasicTextField(
                 modifier = Modifier
                     .onFocusChanged {
-                        if (!it.isFocused && !isSaved) content = TextFieldValue(item.content)
+                        if (!it.isFocused && !isSaved) content = TextFieldValue(item.content!!)
                         isEnabled = it.isFocused
                         isSaved = false
                     }
@@ -126,22 +131,22 @@ fun BoxItem1(
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Next,
                     keyboardType = item.keyboardType?.getType()!!,
-                    capitalization = KeyboardCapitalization.Characters
+                    capitalization = KeyboardCapitalization.Sentences
                 ),
                 keyboardActions = KeyboardActions(
                     onNext = {
                         if (content.text == "") {
-                            content = TextFieldValue(item.content)
+                            content = TextFieldValue(item.content!!)
                         }
                         else if (item.keyboardType == BoxItem.KeyboardDate) {
                             if (content.text.length == 8) {
-                                if (item.onSaveContent != null) item.onSaveContent!!(content.text)
+                                item.onSaveContent!!(content.text)
                                 isSaved = true
                             }
-                            else content = TextFieldValue(item.content)
+                            else content = TextFieldValue(item.content!!)
                         }
                         else {
-                            if (item.onSaveContent != null) item.onSaveContent!!(content.text)
+                            item.onSaveContent!!(content.text)
                             isSaved = true
                         }
 
@@ -203,7 +208,7 @@ fun BoxItem2(
                             isSaved = false
                         }
                         .defaultMinSize(minWidth = 100.dp),
-                    value = content,
+                    value = content!!,
                     cursorBrush = SolidColor(Color.White),
                     singleLine = true,
                     textStyle = LocalTextStyle.current.copy(color = Color.White, textAlign = TextAlign.End),
@@ -218,20 +223,20 @@ fun BoxItem2(
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Next,
                         keyboardType = item.keyboardType?.getType()!!,
-                        capitalization = KeyboardCapitalization.Characters
+                        capitalization = KeyboardCapitalization.Sentences
                     ),
                     keyboardActions = KeyboardActions(
                         onNext = {
                             if (content != "") {
                                 if (item.keyboardType == BoxItem.KeyboardDate) {
-                                    if (content.length == 8) {
-                                        if (item.onSaveContent != null) item.onSaveContent!!(content)
+                                    if (content!!.length == 8) {
+                                         item.onSaveContent!!(content!!)
                                         isSaved = true
                                     }
                                     else content = item.content
                                 }
                                 else {
-                                    if (item.onSaveContent != null) item.onSaveContent!!(content)
+                                    item.onSaveContent!!(content!!)
                                     isSaved = true
                                 }
                             } else content = item.content
@@ -266,6 +271,8 @@ fun BoxItem3(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clip(shape = RoundedCornerShape(10.dp))
+            .clickable { item.onBoxItemClick!!() }
             .padding(15.dp),
         horizontalArrangement = Arrangement.Start
     ) {

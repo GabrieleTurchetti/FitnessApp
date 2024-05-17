@@ -4,7 +4,7 @@ import androidx.compose.ui.text.input.KeyboardType
 
 abstract class BoxItem(
     open val title: String? = null,
-    open val content: String,
+    open val content: String? = null,
     open val unit: String? = null,
     open val keyboardType: BoxItemKeyboardType? = KeyboardText,
     open val onSaveContent: ((String) -> Unit)? = {},
@@ -63,10 +63,10 @@ class BoxItem2(
 }
 
 class BoxItem3(
-    override val content: String,
+    override val title: String,
     override val onBoxItemClick: (() -> Unit)? = {}
 ) : BoxItem(
-    content = content,
+    title = title,
     onBoxItemClick = onBoxItemClick
 ) {
     override fun getType(): Int {
