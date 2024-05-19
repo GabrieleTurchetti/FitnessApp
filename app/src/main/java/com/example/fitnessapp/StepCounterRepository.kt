@@ -13,28 +13,38 @@ import java.time.LocalTime
 class StepCounterRepository(
     private val stepsDao: StepsDao,
 ) {
-    suspend fun storeSteps(stepsSinceLastReboot: Long) = withContext(Dispatchers.IO) {
+    suspend fun storeSteps(steps: Int, stepsAtLastReboot: Int) = withContext(Dispatchers.IO) {
         val stepCount = StepCount(
-            steps = stepsSinceLastReboot,
-            createdAt = Instant.now().toString()
+            date = LocalDate.now().toString(),
+            steps = steps,
+            stepsAtLastReboot = stepsAtLastReboot
         )
         Log.d("STEP_COUNT_LISTENER", "Storing steps: $stepCount")
-        stepsDao.insertAll(stepCount)
+        stepsDao.insert(stepCount)
     }
 
-    suspend fun loadTodaySteps(): Long = withContext(Dispatchers.IO) {
-        val todayAtMidnight = (LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT).toString())
-        val todayDataPoints = stepsDao.loadAllStepsFromToday(startDateTime = todayAtMidnight)
-        when {
-            todayDataPoints.isEmpty() -> 0
-            else -> {
-                val firstDataPointOfTheDay = todayDataPoints.first()
-                val latestDataPointSoFar = todayDataPoints.last()
+    suspend fun getStepsByDate(date: String = LocalDate.now().toString()): Int = withContext(Dispatchers.IO) {
+        val dateStepCounter = stepsDao.getByDate(date = date)
 
-                val todaySteps = latestDataPointSoFar.steps - firstDataPointOfTheDay.steps
-                Log.d("STEP_COUNT_LISTENER", "Today Steps: $todaySteps")
-                todaySteps
-            }
+        if (dateStepCounter.isEmpty()) {
+            0
+        }
+        else {
+            Log.d("STEP_COUNT_LISTENER", "Today Steps: $dateStepCounter")
+            dateStepCounter.first().steps
+        }
+    }
+
+    suspend fun getStepsAtLastReboot(): Int = withContext(Dispatchers.IO) {
+        val today = LocalDate.now().toString()
+        val todayStepCounter = stepsDao.getByDate(date = today)
+
+        if (todayStepCounter.isEmpty()) {
+            0
+        }
+        else {
+            Log.d("STEP_COUNT_LISTENER", "Today Steps: $todayStepCounter")
+            todayStepCounter.first().stepsAtLastReboot
         }
     }
 }

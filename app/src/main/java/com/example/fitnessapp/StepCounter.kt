@@ -8,12 +8,16 @@ import android.hardware.SensorManager
 import android.util.Log
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.fitnessapp.datastore.ProfileSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope.coroutineContext
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import java.time.LocalDate
 
 private const val TAG = "STEP_COUNT_LISTENER"
 
@@ -32,11 +36,21 @@ class StepCounter(
                 override fun onSensorChanged(event: SensorEvent?) {
                     if (event == null) return
 
-                    val stepsSinceLastReboot = event.values[0].toLong()
+                    val stepsSinceLastReboot = event.values[0].toInt()
                     Log.d(TAG, "Steps since last reboot: $stepsSinceLastReboot")
 
                     scope.launch {
-                        StepCounterRepository(MainActivity.db.stepsDao()).storeSteps(stepsSinceLastReboot)
+                        val todaySteps = StepCounterRepository(MainActivity.db.stepsDao()).getStepsByDate(LocalDate.now().toString())
+                        val stepsAtLastReboot = StepCounterRepository(MainActivity.db.stepsDao()).getStepsAtLastReboot()
+
+                        if (stepsSinceLastReboot <= todaySteps) {
+                            if (stepsSinceLastReboot == 0) StepCounterRepository(MainActivity.db.stepsDao()).storeSteps(todaySteps, todaySteps)
+                            else StepCounterRepository(MainActivity.db.stepsDao()).storeSteps(stepsSinceLastReboot + stepsAtLastReboot, stepsAtLastReboot)
+                        }
+                        else {
+                            val yesterdaySteps = StepCounterRepository(MainActivity.db.stepsDao()).getStepsByDate(LocalDate.now().minusDays(1).toString())
+                            StepCounterRepository(MainActivity.db.stepsDao()).storeSteps(stepsSinceLastReboot - yesterdaySteps, stepsAtLastReboot)
+                        }
                     }
 
                     if (continuation.isActive) {

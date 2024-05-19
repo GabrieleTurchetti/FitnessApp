@@ -16,7 +16,7 @@ class StepCounterViewModel: ViewModel() {
         }
     }
 
-    suspend fun getSteps(): Long {
-        return StepCounterRepository(MainActivity.db.stepsDao()).loadTodaySteps()
+    suspend fun getSteps(date: String): Int {
+        return StepCounterRepository(MainActivity.db.stepsDao()).getStepsByDate(date)
     }
 }

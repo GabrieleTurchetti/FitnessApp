@@ -30,6 +30,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -53,6 +54,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fitnessapp.R
@@ -64,7 +66,7 @@ fun GroupBox(items: List<BoxItem>) {
     LazyColumn(
         modifier = Modifier
             .clip(shape = RoundedCornerShape(10.dp))
-            .background(Color.DarkGray)
+            .background(MaterialTheme.colorScheme.inverseOnSurface)
 
     ) {
         itemsIndexed(items) { index, item ->
@@ -120,7 +122,7 @@ fun BoxItem1(
                 cursorBrush = SolidColor(Color.White),
                 enabled = isEnabled,
                 singleLine = true,
-                textStyle = LocalTextStyle.current.copy(color = Color.White, textAlign = TextAlign.Start, fontSize = 20.sp),
+                textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.Start, fontSize = 20.sp),
                 onValueChange = {
                     if (item.keyboardType != BoxItem.KeyboardDate) {
                         content = it
@@ -183,6 +185,7 @@ fun BoxItem2(
     focusManager: FocusManager
 ) {
     var isSaved by remember { mutableStateOf(false) }
+    var isFocused by remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier
@@ -205,13 +208,14 @@ fun BoxItem2(
                                 content = item.content
                             }
 
+                            isFocused = it.isFocused
                             isSaved = false
                         }
                         .defaultMinSize(minWidth = 100.dp),
                     value = content!!,
                     cursorBrush = SolidColor(Color.White),
                     singleLine = true,
-                    textStyle = LocalTextStyle.current.copy(color = Color.White, textAlign = TextAlign.End),
+                    textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.End),
                     onValueChange = {
                         if (item.keyboardType == BoxItem.KeyboardDate) {
                             if (it.length <= 8) content = it
@@ -257,8 +261,8 @@ fun BoxItem2(
     if (!isLastItem) {
         Divider(
             modifier = Modifier.padding(horizontal = 10.dp),
-            color = Color.LightGray,
-            thickness = 0.25.dp
+            color = MaterialTheme.colorScheme.outline,
+            thickness = Dp.Hairline
         )
     }
 }

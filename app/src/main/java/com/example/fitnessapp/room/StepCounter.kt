@@ -6,14 +6,17 @@ import androidx.room.Database
 import androidx.room.Delete
 import androidx.room.Entity
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.RoomDatabase
+import androidx.room.Update
 
 @Entity(tableName = "steps")
 data class StepCount(
-    @ColumnInfo(name = "steps") val steps: Long,
-    @PrimaryKey @ColumnInfo(name = "created_at") val createdAt: String,
+    @PrimaryKey @ColumnInfo(name = "date") val date: String,
+    @ColumnInfo(name = "steps") val steps: Int,
+    @ColumnInfo(name = "steps_at_last_reboot") val stepsAtLastReboot: Int
 )
 
 @Dao
@@ -21,12 +24,11 @@ interface StepsDao {
     @Query("SELECT * FROM steps")
     suspend fun getAll(): List<StepCount>
 
-    @Query("SELECT * FROM steps WHERE created_at >= date(:startDateTime) " +
-            "AND created_at < date(:startDateTime, '+1 day')")
-    suspend fun loadAllStepsFromToday(startDateTime: String): Array<StepCount>
+    @Query("SELECT * FROM steps WHERE date == :date")
+    suspend fun getByDate(date: String): Array<StepCount>
 
-    @Insert
-    suspend fun insertAll(vararg steps: StepCount)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(vararg steps: StepCount)
 
     @Delete
     suspend fun delete(steps: StepCount)

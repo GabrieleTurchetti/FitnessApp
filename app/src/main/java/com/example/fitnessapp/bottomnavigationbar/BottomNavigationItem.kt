@@ -18,7 +18,7 @@ data class BottomNavigationItem(
     fun bottomNavigationItems() : List<BottomNavigationItem> {
         return listOf(
             BottomNavigationItem(
-                label = "Exercises",
+                label = "Esercizi",
                 icon = ImageVector.vectorResource(R.drawable.ic_fitness_center),
                 route = Screen.Exercises.route
             ),
@@ -28,7 +28,7 @@ data class BottomNavigationItem(
                 route = Screen.Home.route
             ),
             BottomNavigationItem(
-                label = "Profile",
+                label = "Profilo",
                 icon = Icons.Filled.AccountCircle,
                 route = Screen.Profile.route
             )
