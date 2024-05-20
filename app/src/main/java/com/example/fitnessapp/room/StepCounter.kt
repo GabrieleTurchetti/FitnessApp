@@ -16,7 +16,8 @@ import androidx.room.Update
 data class StepCount(
     @PrimaryKey @ColumnInfo(name = "date") val date: String,
     @ColumnInfo(name = "steps") val steps: Int,
-    @ColumnInfo(name = "steps_at_last_reboot") val stepsAtLastReboot: Int
+    @ColumnInfo(name = "steps_at_last_reboot") val stepsAtLastReboot: Int,
+    @ColumnInfo(name = "initial_steps") val initialSteps: Int
 )
 
 @Dao

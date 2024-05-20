@@ -2,6 +2,7 @@ package com.example.fitnessapp.bottomnavigationbar
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -25,7 +26,10 @@ import com.example.fitnessapp.exercises.musclegroup.exercise.ExerciseScreen
 import com.example.fitnessapp.exercises.musclegroup.MuscleGroupScreen
 import com.example.fitnessapp.home.HomeScreen
 import com.example.fitnessapp.profile.ProfileScreen
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
+@ExperimentalMaterial3Api
+@ExperimentalPermissionsApi
 @Composable
 fun BottomNavigationBar() {
     var navigationSelectedItem by remember {

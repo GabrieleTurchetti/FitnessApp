@@ -1,9 +1,13 @@
 package com.example.fitnessapp.home
 
+import android.Manifest
 import android.icu.text.DecimalFormat
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -35,23 +40,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.fitnessapp.StepCounterViewModel
+import com.example.fitnessapp.stepcounter.StepCounterViewModel
 import com.example.fitnessapp.datastore.ProfileSettings
 import com.example.fitnessapp.utils.getBurnedCalories
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import kotlinx.coroutines.delay
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @ExperimentalMaterial3Api
+@ExperimentalPermissionsApi
 @Composable
 fun HomeScreen(
     navController: NavController,
     stepCounterViewModel: StepCounterViewModel = viewModel()
 ) {
+    val activityRecognitionPermissionState = rememberPermissionState(Manifest.permission.ACTIVITY_RECOGNITION)
     val context = LocalContext.current
     val dataStore = ProfileSettings(context)
     var steps by remember { mutableStateOf(0) }
@@ -60,14 +75,54 @@ fun HomeScreen(
     val savedWeight = dataStore.getWeight.collectAsState(initial = "0")
     val showDatePicker = remember { mutableStateOf(false) }
     var date by remember { mutableStateOf(LocalDate.now().toString()) }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    var isActivityRecognitionGranted by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit){
-        stepCounterViewModel.initStepCounter(context)
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            Log.d("OBS", "pre")
+            isActivityRecognitionGranted = true
+            Log.d("OBS", "post")
+            stepCounterViewModel.init(context)
+        } else {
+            // Handle permission denial
+        }
+    }
+
+    DisposableEffect(lifecycleOwner, isActivityRecognitionGranted) {
+        val observer = LifecycleEventObserver { source, event ->
+            if (event == Lifecycle.Event.ON_RESUME && isActivityRecognitionGranted) {
+                Log.d("OBS", "sis")
+                stepCounterViewModel.registerListenerStepCounter(context)
+            }
+
+            if (event == Lifecycle.Event.ON_PAUSE) {
+                Log.d("OBS", "sus")
+                stepCounterViewModel.unregisterListenerStepCounter(context)
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    LaunchedEffect(activityRecognitionPermissionState) {
+        if (!activityRecognitionPermissionState.status.isGranted && activityRecognitionPermissionState.status.shouldShowRationale) {
+            // Show rationale if needed
+        } else {
+            requestPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+        }
     }
 
     LaunchedEffect(date){
         while (true) {
             steps = stepCounterViewModel.getSteps(date)
+            if (steps == -1) steps = 0
             delay(1000)
         }
     }
@@ -106,6 +161,7 @@ fun HomeScreen(
                                 .fillMaxSize()
                                 .weight(1f),
                         ) {
+
                             Column(
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -129,9 +185,22 @@ fun HomeScreen(
                                 .fillMaxHeight()
                                 .weight(1f),
                         ) {
-                            Column {
+
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .weight(1f),
+                            )  {
                                 Text("Calorie:")
-                                Text("${getBurnedCalories(savedHeight.value!!.toInt(), savedWeight.value!!.toInt(), steps)}")
+                                Text("${getBurnedCalories(savedHeight.value!!.toInt(), savedWeight.value!!.toInt(), steps)} kcal")
+                            }
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .weight(1f),
+                            ) {
+                                Text("Giorno:")
+                                Text(LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                             }
                         }
                     }
@@ -149,18 +218,12 @@ fun HomeScreen(
                                 }
                                 if (selectedDate.before(Calendar.getInstance())) {
                                     val format1 = SimpleDateFormat("yyyy-MM-dd")
-                                    date = format1.format(selectedDate.time)
-
-                                    Toast.makeText(
-                                        context,
-                                        "Selected date ${selectedDate.time} saved",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    date= format1.format(selectedDate.time)
                                     showDatePicker.value = false
                                 } else {
                                     Toast.makeText(
                                         context,
-                                        "Selected date should be after today, please select again",
+                                        "La data selezionta non è valida",
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
