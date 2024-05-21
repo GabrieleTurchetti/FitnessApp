@@ -28,7 +28,6 @@ class StepCounterRepository(
             -1
         }
         else {
-            Log.d("STEP_COUNT_LISTENER", "Today Steps: $dateStepCounter")
             dateStepCounter.first().steps
         }
     }

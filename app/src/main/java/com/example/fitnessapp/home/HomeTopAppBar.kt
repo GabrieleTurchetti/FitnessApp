@@ -10,19 +10,24 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavController
 import com.example.fitnessapp.R
+import com.example.fitnessapp.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeTopAppBar(
-    showDatePicker: MutableState<Boolean>
+    showDatePicker: MutableState<Boolean>,
+    navController: NavController
 ) {
     TopAppBar(
         title = {
             Text("Home")
         },
         actions = {
-            IconButton(onClick = {}) {
+            IconButton(onClick = {
+                navController.navigate(Screen.Map.route)
+            }) {
                 Icon(
                     painter = painterResource(R.drawable.ic_map),
                     contentDescription = "map",

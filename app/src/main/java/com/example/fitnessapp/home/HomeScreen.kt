@@ -1,6 +1,10 @@
 package com.example.fitnessapp.home
 
 import android.Manifest
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.Manifest.permission.ACTIVITY_RECOGNITION
+import android.content.Intent
 import android.icu.text.DecimalFormat
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
@@ -16,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -50,11 +55,17 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.fitnessapp.stepcounter.StepCounterViewModel
 import com.example.fitnessapp.datastore.ProfileSettings
+import com.example.fitnessapp.location.LocationService
 import com.example.fitnessapp.utils.getBurnedCalories
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -66,7 +77,6 @@ fun HomeScreen(
     navController: NavController,
     stepCounterViewModel: StepCounterViewModel = viewModel()
 ) {
-    val activityRecognitionPermissionState = rememberPermissionState(Manifest.permission.ACTIVITY_RECOGNITION)
     val context = LocalContext.current
     val dataStore = ProfileSettings(context)
     var steps by remember { mutableStateOf(0) }
@@ -77,30 +87,22 @@ fun HomeScreen(
     var date by remember { mutableStateOf(LocalDate.now().toString()) }
     val lifecycleOwner = LocalLifecycleOwner.current
     var isActivityRecognitionGranted by remember { mutableStateOf(false) }
-
-    val requestPermissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            Log.d("OBS", "pre")
-            isActivityRecognitionGranted = true
-            Log.d("OBS", "post")
-            stepCounterViewModel.init(context)
-        } else {
-            // Handle permission denial
-        }
-    }
+    var isAccessCoarseLocaltionGranted by remember { mutableStateOf(false) }
+    var isAccessFineLocationGranted by remember { mutableStateOf(false) }
+    val permissionsState = rememberMultiplePermissionsState(
+        permissions = listOf(
+            ACTIVITY_RECOGNITION,
+            ACCESS_COARSE_LOCATION,
+            ACCESS_FINE_LOCATION
+        )
+    )
 
     DisposableEffect(lifecycleOwner, isActivityRecognitionGranted) {
         val observer = LifecycleEventObserver { source, event ->
-            if (event == Lifecycle.Event.ON_RESUME && isActivityRecognitionGranted) {
-                Log.d("OBS", "sis")
-                stepCounterViewModel.registerListenerStepCounter(context)
-            }
-
-            if (event == Lifecycle.Event.ON_PAUSE) {
-                Log.d("OBS", "sus")
-                stepCounterViewModel.unregisterListenerStepCounter(context)
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> if (isActivityRecognitionGranted) {stepCounterViewModel.registerListenerStepCounter(context); Log.d("TAG", "isgrant")}
+                Lifecycle.Event.ON_PAUSE -> {stepCounterViewModel.unregisterListenerStepCounter(context); Log.d("TAG", "isnot")}
+                else -> {}
             }
         }
 
@@ -111,11 +113,25 @@ fun HomeScreen(
         }
     }
 
-    LaunchedEffect(activityRecognitionPermissionState) {
-        if (!activityRecognitionPermissionState.status.isGranted && activityRecognitionPermissionState.status.shouldShowRationale) {
-            // Show rationale if needed
-        } else {
-            requestPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+    LaunchedEffect(permissionsState) {
+        permissionsState.launchMultiplePermissionRequest()
+
+        permissionsState.permissions.forEach {
+            when (it.permission) {
+                ACTIVITY_RECOGNITION -> {
+                    if (it.status.isGranted) {
+                        isActivityRecognitionGranted = true
+                        stepCounterViewModel.init(context)
+                    }
+                }
+                ACCESS_COARSE_LOCATION -> {
+                    if (it.status.isGranted) isAccessCoarseLocaltionGranted = true
+                }
+                ACCESS_FINE_LOCATION -> {
+                    if (it.status.isGranted) isAccessFineLocationGranted = true
+                }
+                else -> {}
+            }
         }
     }
 
@@ -129,7 +145,10 @@ fun HomeScreen(
 
     Scaffold(
         topBar = {
-            HomeTopAppBar(showDatePicker)
+            HomeTopAppBar(
+                showDatePicker,
+                navController
+            )
         },
         content = { padding ->
             val datePickerState = rememberDatePickerState()
@@ -150,6 +169,14 @@ fun HomeScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         CircularProgressBar(steps = steps, stepsGoal = savedStepGoal.value!!.toInt())
+                        Button(onClick = {
+                            Intent(context, LocationService::class.java).apply {
+                                action = LocationService.ACTION_START
+                                context.startService(this)
+                            }
+                        }) {
+                            Text(text = "Start")
+                        }
                     }
                     Column(
                         modifier = Modifier
@@ -213,20 +240,27 @@ fun HomeScreen(
                     confirmButton = {
                         TextButton(
                             onClick = {
-                                val selectedDate = Calendar.getInstance().apply {
-                                    timeInMillis = datePickerState.selectedDateMillis!!
+                                if (datePickerState.selectedDateMillis != null) {
+                                    val selectedDate = Calendar.getInstance().apply {
+                                        timeInMillis = datePickerState.selectedDateMillis!!
+                                    }
+                                    if (selectedDate.before(Calendar.getInstance())) {
+                                        val format1 = SimpleDateFormat("yyyy-MM-dd")
+                                        date = format1.format(selectedDate.time)
+                                        showDatePicker.value = false
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "La data selezionta non è valida",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
                                 }
-                                if (selectedDate.before(Calendar.getInstance())) {
-                                    val format1 = SimpleDateFormat("yyyy-MM-dd")
-                                    date= format1.format(selectedDate.time)
-                                    showDatePicker.value = false
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        "La data selezionta non è valida",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
+                                else Toast.makeText(
+                                    context,
+                                    "La data selezionta non è valida",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         ) { Text("OK") }
                     },
@@ -257,7 +291,6 @@ private fun CircularProgressBar(
     steps: Int,
     stepsGoal: Int
 ) {
-
     CircularProgressIndicator(
         modifier = Modifier.size(size),
         strokeWidth = strokeWidth,

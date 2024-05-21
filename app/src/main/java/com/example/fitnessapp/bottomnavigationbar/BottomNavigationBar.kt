@@ -25,6 +25,7 @@ import com.example.fitnessapp.exercises.ExercisesScreen
 import com.example.fitnessapp.exercises.musclegroup.exercise.ExerciseScreen
 import com.example.fitnessapp.exercises.musclegroup.MuscleGroupScreen
 import com.example.fitnessapp.home.HomeScreen
+import com.example.fitnessapp.home.map.MapScreen
 import com.example.fitnessapp.profile.ProfileScreen
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
@@ -84,6 +85,9 @@ fun BottomNavigationBar() {
                 HomeScreen(
                     navController
                 )
+            }
+            composable(Screen.Map.route) {
+                MapScreen()
             }
             composable(Screen.Profile.route) {
                 ProfileScreen(
