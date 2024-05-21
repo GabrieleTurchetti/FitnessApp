@@ -12,10 +12,12 @@ import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
 fun MapScreen() {
-    val atasehir = LatLng(42.7701, 11.1198)
+    val here = LatLng(42.7701, 11.1198)
+
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(atasehir, 15f)
+        position = CameraPosition.fromLatLngZoom(here, 15f)
     }
+
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
         cameraPositionState = cameraPositionState

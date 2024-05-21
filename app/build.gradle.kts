@@ -1,3 +1,6 @@
+import com.android.build.api.variant.ResValue
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -18,6 +21,19 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
+        }
+    }
+
+    androidComponents{
+        onVariants {
+            val properties = Properties()
+            properties.load(project.rootProject.file("local.properties").inputStream())
+            val mapsApiKey = properties.getProperty("MAPS_API_KEY")
+
+            it.resValues.put(
+                it.makeResValueKey("string","MAPS_API_KEY"),
+                ResValue(mapsApiKey,"maps api key")
+            )
         }
     }
 

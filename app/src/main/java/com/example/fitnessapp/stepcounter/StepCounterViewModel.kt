@@ -18,15 +18,11 @@ class StepCounterViewModel: ViewModel() {
         stepCounter?.steps()
     }
 
-    fun registerListenerStepCounter(context: Context) {
+    fun registerListenerStepCounter() {
         stepCounter?.registerListener()
     }
 
-    fun unregisterListenerStepCounter(context: Context) {
-        StepCounter(context).steps()
-    }
-
-    suspend fun getSteps(date: String): Int {
-        return StepCounterRepository(MainActivity.db.stepsDao()).getStepsByDate(date)
+    fun unregisterListenerStepCounter() {
+        stepCounter?.unregisterListener()
     }
 }

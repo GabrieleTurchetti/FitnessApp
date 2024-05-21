@@ -33,12 +33,12 @@ fun ProfileScreen(navController: NavController) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val dataStore = ProfileSettings(context)
-    val savedUsername = dataStore.getUsername.collectAsState(initial = "%i")
-    val savedBirthDate = dataStore.getBirthDate.collectAsState(initial = "%i")
-    val savedGender = dataStore.getGender.collectAsState(initial = "%i")
-    val savedHeight = dataStore.getHeight.collectAsState(initial = "%i")
-    val savedWeight = dataStore.getWeight.collectAsState(initial = "%i")
-    val savedStepGoal = dataStore.getStepGoal.collectAsState(initial = "%i")
+    val username = dataStore.getUsername.collectAsState(initial = "%i")
+    val birthDate = dataStore.getBirthDate.collectAsState(initial = "%i")
+    val gender = dataStore.getGender.collectAsState(initial = "%i")
+    val height = dataStore.getHeight.collectAsState(initial = "%i")
+    val weight = dataStore.getWeight.collectAsState(initial = "%i")
+    val stepGoal = dataStore.getStepGoal.collectAsState(initial = "%i")
 
     Scaffold(
         topBar = {
@@ -53,7 +53,7 @@ fun ProfileScreen(navController: NavController) {
         ) {
             GroupBox(
                 items = listOf(
-                    BoxItem1(content = savedUsername.value!!)
+                    BoxItem1(content = username.value!!)
                 )
             )
             Spacer(modifier = Modifier.height(20.dp))
@@ -61,7 +61,7 @@ fun ProfileScreen(navController: NavController) {
                 items = listOf(
                     BoxItem2(
                         title = "Data di nascita",
-                        content = savedBirthDate.value!!,
+                        content = birthDate.value!!,
                         keyboardType = BoxItem.KeyboardDate,
                         onSaveContent = {
                             scope.launch {
@@ -70,7 +70,7 @@ fun ProfileScreen(navController: NavController) {
                         }),
                     BoxItem2(
                         title = "Sesso",
-                        content = savedGender.value!!,
+                        content = gender.value!!,
                         keyboardType = BoxItem.KeyboardGender,
                         onSaveContent = {
                             scope.launch {
@@ -79,7 +79,7 @@ fun ProfileScreen(navController: NavController) {
                         }),
                     BoxItem2(
                         title = "Altezza",
-                        content = savedHeight.value!!,
+                        content = height.value!!,
                         unit = "cm",
                         keyboardType = BoxItem.KeyboardNumber,
                         onSaveContent = {
@@ -89,7 +89,7 @@ fun ProfileScreen(navController: NavController) {
                         }),
                     BoxItem2(
                         title = "Peso",
-                        content = savedWeight.value!!,
+                        content = weight.value!!,
                         unit = "kg",
                         keyboardType = BoxItem.KeyboardNumber,
                         onSaveContent = {
@@ -104,7 +104,7 @@ fun ProfileScreen(navController: NavController) {
                 items = listOf(
                     BoxItem2(
                         title = "Obbiettivo giornaliero",
-                        content = savedStepGoal.value!!,
+                        content = stepGoal.value!!,
                         keyboardType = BoxItem.KeyboardNumber,
                         onSaveContent = {
                             scope.launch {

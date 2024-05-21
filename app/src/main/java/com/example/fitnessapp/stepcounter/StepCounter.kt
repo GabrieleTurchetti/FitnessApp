@@ -7,7 +7,12 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.platform.LocalContext
 import com.example.fitnessapp.MainActivity
+import com.example.fitnessapp.caloriesburned.CaloriesBurnedRepository
+import com.example.fitnessapp.datastore.ProfileSettings
+import com.example.fitnessapp.utils.getBurnedCalories
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,32 +45,40 @@ class StepCounter(
                 Log.d(TAG, "Steps since last reboot: $stepsSinceLastReboot")
 
                 scope.launch {
-                    val todaySteps = StepCounterRepository(MainActivity.db.stepsDao()).getStepsByDate(LocalDate.now().toString())
-                    val todayStepsAtLastReboot = StepCounterRepository(MainActivity.db.stepsDao()).getTodayStepsAtLastReboot()
-                    val initialSteps = StepCounterRepository(MainActivity.db.stepsDao()).getInitialStepsByDate(LocalDate.now().toString())
+                    val todaySteps = StepCounterRepository(MainActivity.db.fitnessDao()).getStepsByDate(LocalDate.now().toString())
+                    val todayStepsAtLastReboot = StepCounterRepository(MainActivity.db.fitnessDao()).getTodayStepsAtLastReboot()
+                    val initialSteps = StepCounterRepository(MainActivity.db.fitnessDao()).getInitialStepsByDate(LocalDate.now().toString())
 
                     if (stepsSinceLastReboot <= todaySteps) { // il reboot è stato fatto oggi
-                        if (stepsSinceLastReboot == 0) StepCounterRepository(MainActivity.db.stepsDao()).storeSteps(
-                            todaySteps,
-                            todaySteps,
-                            initialSteps
-                        )
-                        else StepCounterRepository(MainActivity.db.stepsDao()).storeSteps(
-                            stepsSinceLastReboot + todayStepsAtLastReboot,
-                            todayStepsAtLastReboot,
-                            initialSteps
-                        )
+                        if (stepsSinceLastReboot == 0) {
+                            StepCounterRepository(MainActivity.db.fitnessDao()).storeSteps(
+                                todaySteps,
+                                todaySteps,
+                                initialSteps
+                            )
+                        }
+                        else {
+                            StepCounterRepository(MainActivity.db.fitnessDao()).storeSteps(
+                                stepsSinceLastReboot + todayStepsAtLastReboot,
+                                todayStepsAtLastReboot,
+                                initialSteps
+                            )
+                        }
                     } else { // il reboot è stato fatto prima di oggi
-                        if (todaySteps == -1) StepCounterRepository(MainActivity.db.stepsDao()).storeSteps(
-                            0,
-                            0,
-                            stepsSinceLastReboot
-                        )
-                        else StepCounterRepository(MainActivity.db.stepsDao()).storeSteps(
-                            stepsSinceLastReboot - initialSteps,
-                            stepsSinceLastReboot - initialSteps,
-                            initialSteps
-                        )
+                        if (todaySteps == -1) {
+                            StepCounterRepository(MainActivity.db.fitnessDao()).storeSteps(
+                                0,
+                                0,
+                                stepsSinceLastReboot
+                            )
+                        }
+                        else {
+                            StepCounterRepository(MainActivity.db.fitnessDao()).storeSteps(
+                                stepsSinceLastReboot - initialSteps,
+                                stepsSinceLastReboot - initialSteps,
+                                initialSteps
+                            )
+                        }
                     }
                 }
             }

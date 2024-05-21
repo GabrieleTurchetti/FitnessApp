@@ -53,9 +53,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.fitnessapp.MainActivity
+import com.example.fitnessapp.caloriesburned.CaloriesBurnedRepository
 import com.example.fitnessapp.stepcounter.StepCounterViewModel
 import com.example.fitnessapp.datastore.ProfileSettings
 import com.example.fitnessapp.location.LocationService
+import com.example.fitnessapp.stepcounter.StepCounterRepository
 import com.example.fitnessapp.utils.getBurnedCalories
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -74,71 +77,24 @@ import java.time.format.DateTimeFormatter
 @ExperimentalPermissionsApi
 @Composable
 fun HomeScreen(
-    navController: NavController,
-    stepCounterViewModel: StepCounterViewModel = viewModel()
+    navController: NavController
 ) {
     val context = LocalContext.current
     val dataStore = ProfileSettings(context)
     var steps by remember { mutableStateOf(0) }
-    val savedStepGoal = dataStore.getStepGoal.collectAsState(initial = "0")
-    val savedHeight = dataStore.getHeight.collectAsState(initial = "0")
-    val savedWeight = dataStore.getWeight.collectAsState(initial = "0")
+    val stepGoal = dataStore.getStepGoal.collectAsState(initial = "0")
+    val height = dataStore.getHeight.collectAsState(initial = "0")
+    val weight = dataStore.getWeight.collectAsState(initial = "0")
     val showDatePicker = remember { mutableStateOf(false) }
+    var calories by remember { mutableStateOf(0) }
     var date by remember { mutableStateOf(LocalDate.now().toString()) }
-    val lifecycleOwner = LocalLifecycleOwner.current
-    var isActivityRecognitionGranted by remember { mutableStateOf(false) }
-    var isAccessCoarseLocaltionGranted by remember { mutableStateOf(false) }
-    var isAccessFineLocationGranted by remember { mutableStateOf(false) }
-    val permissionsState = rememberMultiplePermissionsState(
-        permissions = listOf(
-            ACTIVITY_RECOGNITION,
-            ACCESS_COARSE_LOCATION,
-            ACCESS_FINE_LOCATION
-        )
-    )
-
-    DisposableEffect(lifecycleOwner, isActivityRecognitionGranted) {
-        val observer = LifecycleEventObserver { source, event ->
-            when (event) {
-                Lifecycle.Event.ON_RESUME -> if (isActivityRecognitionGranted) {stepCounterViewModel.registerListenerStepCounter(context); Log.d("TAG", "isgrant")}
-                Lifecycle.Event.ON_PAUSE -> {stepCounterViewModel.unregisterListenerStepCounter(context); Log.d("TAG", "isnot")}
-                else -> {}
-            }
-        }
-
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-
-    LaunchedEffect(permissionsState) {
-        permissionsState.launchMultiplePermissionRequest()
-
-        permissionsState.permissions.forEach {
-            when (it.permission) {
-                ACTIVITY_RECOGNITION -> {
-                    if (it.status.isGranted) {
-                        isActivityRecognitionGranted = true
-                        stepCounterViewModel.init(context)
-                    }
-                }
-                ACCESS_COARSE_LOCATION -> {
-                    if (it.status.isGranted) isAccessCoarseLocaltionGranted = true
-                }
-                ACCESS_FINE_LOCATION -> {
-                    if (it.status.isGranted) isAccessFineLocationGranted = true
-                }
-                else -> {}
-            }
-        }
-    }
 
     LaunchedEffect(date){
         while (true) {
-            steps = stepCounterViewModel.getSteps(date)
+            steps = StepCounterRepository(MainActivity.db.fitnessDao()).getStepsByDate(date)
             if (steps == -1) steps = 0
+            calories = getBurnedCalories(height.value?.toInt()!!, weight.value?.toInt()!!, steps)
+            CaloriesBurnedRepository(MainActivity.db.fitnessDao()).insertCalories(calories)
             delay(1000)
         }
     }
@@ -168,15 +124,7 @@ fun HomeScreen(
                             .weight(2f),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressBar(steps = steps, stepsGoal = savedStepGoal.value!!.toInt())
-                        Button(onClick = {
-                            Intent(context, LocationService::class.java).apply {
-                                action = LocationService.ACTION_START
-                                context.startService(this)
-                            }
-                        }) {
-                            Text(text = "Start")
-                        }
+                        CircularProgressBar(steps = steps, stepsGoal = stepGoal.value!!.toInt())
                     }
                     Column(
                         modifier = Modifier
@@ -219,7 +167,7 @@ fun HomeScreen(
                                     .weight(1f),
                             )  {
                                 Text("Calorie:")
-                                Text("${getBurnedCalories(savedHeight.value!!.toInt(), savedWeight.value!!.toInt(), steps)} kcal")
+                                Text("$calories kcal")
                             }
                             Column(
                                 modifier = Modifier
