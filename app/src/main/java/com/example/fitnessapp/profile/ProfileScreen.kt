@@ -1,9 +1,5 @@
 package com.example.fitnessapp.profile
 
-import android.content.Intent
-import android.provider.Settings.ACTION_APPLICATION_SETTINGS
-import android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS
-import android.provider.Settings.ACTION_WIFI_SETTINGS
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,20 +8,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.*
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.fitnessapp.common.BoxItem
-import com.example.fitnessapp.common.BoxItem1
-import com.example.fitnessapp.common.BoxItem2
-import com.example.fitnessapp.common.BoxItem3
-import com.example.fitnessapp.common.GroupBox
+import com.example.fitnessapp.ui.theme.common.BoxItem
+import com.example.fitnessapp.ui.theme.common.BoxItem1
+import com.example.fitnessapp.ui.theme.common.BoxItem2
+import com.example.fitnessapp.ui.theme.common.GroupBox
 import com.example.fitnessapp.datastore.ProfileSettings
-import com.example.fitnessapp.home.HomeTopAppBar
 import kotlinx.coroutines.launch
 
 @Composable
@@ -53,7 +45,14 @@ fun ProfileScreen(navController: NavController) {
         ) {
             GroupBox(
                 items = listOf(
-                    BoxItem1(content = username.value!!)
+                    BoxItem1(
+                        content = username.value!!,
+                        onSaveContent = {
+                            scope.launch {
+                                dataStore.setUsername(it)
+                            }
+                        }
+                    )
                 )
             )
             Spacer(modifier = Modifier.height(20.dp))
@@ -111,19 +110,6 @@ fun ProfileScreen(navController: NavController) {
                                 dataStore.setStepGoal(it)
                             }
                         })
-                )
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            GroupBox(
-                items = listOf(
-                    BoxItem3(title = "Notifiche", onBoxItemClick = {
-                        val intent = Intent(ACTION_APP_NOTIFICATION_SETTINGS)
-                        intent.putExtra(
-                            "android.provider.extra.APP_PACKAGE",
-                            context.getPackageName()
-                        )
-                        context.startActivity(intent)
-                    })
                 )
             )
         }

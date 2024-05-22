@@ -1,4 +1,4 @@
-package com.example.fitnessapp.common
+package com.example.fitnessapp.utils
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping

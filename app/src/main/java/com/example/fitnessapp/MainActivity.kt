@@ -52,11 +52,13 @@ class MainActivity : ComponentActivity() {
                 var isActivityRecognitionGranted by remember { mutableStateOf(false) }
                 var isAccessCoarseLocationGranted by remember { mutableStateOf(false) }
                 var isAccessFineLocationGranted by remember { mutableStateOf(false) }
+                var isPostNotificationGranted by remember { mutableStateOf(false) }
                 val permissionsState = rememberMultiplePermissionsState(
                     permissions = listOf(
                         Manifest.permission.ACTIVITY_RECOGNITION,
                         Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.POST_NOTIFICATIONS
                     )
                 )
 
@@ -108,6 +110,9 @@ class MainActivity : ComponentActivity() {
                                     context.startService(this)
                                 }
                             }
+                        }
+                        Manifest.permission.POST_NOTIFICATIONS -> {
+                            if (it.status.isGranted) isPostNotificationGranted = true
                         }
                         else -> {}
                     }

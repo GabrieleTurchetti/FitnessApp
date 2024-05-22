@@ -3,7 +3,7 @@ package com.example.fitnessapp.exercises.musclegroup.exercise
 import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import com.example.fitnessapp.common.CardItem
+import com.example.fitnessapp.ui.theme.common.CardItem
 import com.example.fitnessapp.utils.getSnakeCaseFromCamelCase
 
 data class Exercise(

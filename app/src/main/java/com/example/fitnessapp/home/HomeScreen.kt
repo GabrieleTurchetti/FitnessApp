@@ -87,14 +87,13 @@ fun HomeScreen(
     val weight = dataStore.getWeight.collectAsState(initial = "0")
     val showDatePicker = remember { mutableStateOf(false) }
     var calories by remember { mutableStateOf(0) }
-    var date by remember { mutableStateOf(LocalDate.now().toString()) }
+    var date = remember { mutableStateOf(LocalDate.now().toString()) }
 
     LaunchedEffect(date){
         while (true) {
-            steps = StepCounterRepository(MainActivity.db.fitnessDao()).getStepsByDate(date)
+            steps = StepCounterRepository(MainActivity.db.fitnessDao()).getStepsByDate(date.value)
+            calories = CaloriesBurnedRepository(MainActivity.db.fitnessDao()).getCaloriesByDate(date.value)
             if (steps == -1) steps = 0
-            calories = getBurnedCalories(height.value?.toInt()!!, weight.value?.toInt()!!, steps)
-            CaloriesBurnedRepository(MainActivity.db.fitnessDao()).insertCalories(calories)
             delay(1000)
         }
     }
@@ -103,7 +102,8 @@ fun HomeScreen(
         topBar = {
             HomeTopAppBar(
                 showDatePicker,
-                navController
+                navController,
+                date
             )
         },
         content = { padding ->
@@ -175,7 +175,7 @@ fun HomeScreen(
                                     .weight(1f),
                             ) {
                                 Text("Giorno:")
-                                Text(LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                                Text(LocalDate.parse(date.value, DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
                             }
                         }
                     }
@@ -194,7 +194,7 @@ fun HomeScreen(
                                     }
                                     if (selectedDate.before(Calendar.getInstance())) {
                                         val format1 = SimpleDateFormat("yyyy-MM-dd")
-                                        date = format1.format(selectedDate.time)
+                                        date.value = format1.format(selectedDate.time)
                                         showDatePicker.value = false
                                     } else {
                                         Toast.makeText(

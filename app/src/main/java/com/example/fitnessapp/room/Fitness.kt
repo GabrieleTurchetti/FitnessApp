@@ -25,11 +25,11 @@ data class Calories(
 )
 
 @Entity(tableName = "locations")
-data class Locations(
-    @PrimaryKey val id: Int,
+data class Location(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "date") val date: String,
-    @ColumnInfo(name = "latitude") val latitude: Int,
-    @ColumnInfo(name = "longitude") val longitude: Int
+    @ColumnInfo(name = "latitude") val latitude: Float,
+    @ColumnInfo(name = "longitude") val longitude: Float
 )
 
 @Dao
@@ -45,9 +45,15 @@ interface FitnessDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCalories(vararg calories: Calories)
+
+    @Query("SELECT * FROM locations WHERE date == :date")
+    suspend fun getLocationsByDate(date: String): List<Location>
+
+    @Insert
+    suspend fun insertLocation(vararg location: Location)
 }
 
-@Database(entities = [Steps::class, Calories::class, Locations::class], version = 1)
+@Database(entities = [Steps::class, Calories::class, Location::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun fitnessDao(): FitnessDao
 }

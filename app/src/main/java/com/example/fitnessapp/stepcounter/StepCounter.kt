@@ -48,6 +48,10 @@ class StepCounter(
                     val todaySteps = StepCounterRepository(MainActivity.db.fitnessDao()).getStepsByDate(LocalDate.now().toString())
                     val todayStepsAtLastReboot = StepCounterRepository(MainActivity.db.fitnessDao()).getTodayStepsAtLastReboot()
                     val initialSteps = StepCounterRepository(MainActivity.db.fitnessDao()).getInitialStepsByDate(LocalDate.now().toString())
+                    val dataStore = ProfileSettings(context)
+                    val height = dataStore.getHeight
+                    val weight = dataStore.getWeight
+                    var calories = 0
 
                     if (stepsSinceLastReboot <= todaySteps) { // il reboot è stato fatto oggi
                         if (stepsSinceLastReboot == 0) {

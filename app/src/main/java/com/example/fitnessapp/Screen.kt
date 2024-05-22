@@ -2,7 +2,7 @@ package com.example.fitnessapp
 
 sealed class Screen(val route : String) {
     data object Home : Screen("home")
-    data object Map : Screen("map")
+    data object Map : Screen("home/{date}")
     data object Exercises : Screen("exercises")
     data object Profile : Screen("profile")
     data object MuscleGroup : Screen("exercises/{muscleGroupId}")

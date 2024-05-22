@@ -1,32 +1,20 @@
-package com.example.fitnessapp.common
+package com.example.fitnessapp.ui.theme.common
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.focusable
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.indication
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
@@ -50,7 +37,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
@@ -60,6 +46,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fitnessapp.R
+import com.example.fitnessapp.utils.DateTransformation
 
 @Composable
 fun GroupBox(items: List<BoxItem>) {
@@ -75,7 +62,6 @@ fun GroupBox(items: List<BoxItem>) {
             when (item.getType()) {
                 1 -> BoxItem1(index == items.lastIndex, item, focusManager)
                 2 -> BoxItem2(index == items.lastIndex, item, focusManager)
-                3 -> BoxItem3(index == items.lastIndex, item)
             }
         }
     }
@@ -354,29 +340,3 @@ fun BoxItem2(
         )
     }
 }
-
-@Composable
-fun BoxItem3(
-    isLastItem: Boolean,
-    item: BoxItem
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(shape = RoundedCornerShape(10.dp))
-            .clickable { item.onBoxItemClick!!() }
-            .padding(15.dp),
-        horizontalArrangement = Arrangement.Start
-    ) {
-        Text("${item.title}")
-
-        if (!isLastItem) {
-            Divider(
-                modifier = Modifier.padding(horizontal = 10.dp),
-                color = Color.LightGray,
-                thickness = 0.25.dp
-            )
-        }
-    }
-}
-

@@ -18,7 +18,8 @@ import com.example.fitnessapp.Screen
 @Composable
 fun HomeTopAppBar(
     showDatePicker: MutableState<Boolean>,
-    navController: NavController
+    navController: NavController,
+    date: MutableState<String>
 ) {
     TopAppBar(
         title = {
@@ -26,7 +27,7 @@ fun HomeTopAppBar(
         },
         actions = {
             IconButton(onClick = {
-                navController.navigate(Screen.Map.route)
+                navController.navigate(Screen.Home.route + "/" + date.value)
             }) {
                 Icon(
                     painter = painterResource(R.drawable.ic_map),

@@ -8,11 +8,10 @@ import android.os.Build
 import android.util.Log
 
 class LocationApp : Application() {
-
     override fun onCreate() {
         super.onCreate()
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 "location",
                 "Location",

@@ -86,10 +86,20 @@ fun BottomNavigationBar() {
                     navController
                 )
             }
-            composable(Screen.Map.route) {
-                MapScreen()
+            composable(
+                Screen.Map.route,
+                arguments = listOf(
+                    navArgument("date") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                MapScreen(
+                    backStackEntry.arguments?.getString("date")
+                )
             }
-            composable(Screen.Profile.route) {
+            composable(
+                Screen.Profile.route,
+
+            ) {
                 ProfileScreen(
                     navController
                 )

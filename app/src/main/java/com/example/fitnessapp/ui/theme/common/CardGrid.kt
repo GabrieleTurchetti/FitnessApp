@@ -1,4 +1,4 @@
-package com.example.fitnessapp.common
+package com.example.fitnessapp.ui.theme.common
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
