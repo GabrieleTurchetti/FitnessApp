@@ -8,7 +8,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import com.example.fitnessapp.ui.theme.common.CardGrid
+import com.example.fitnessapp.ui.common.CardGrid
 import com.example.fitnessapp.Screen
 import com.example.fitnessapp.exercises.ExercisesTopAppBar
 

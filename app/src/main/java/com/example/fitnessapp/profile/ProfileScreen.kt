@@ -1,5 +1,6 @@
 package com.example.fitnessapp.profile
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,30 +13,33 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.fitnessapp.ui.theme.common.BoxItem
-import com.example.fitnessapp.ui.theme.common.BoxItem1
-import com.example.fitnessapp.ui.theme.common.BoxItem2
-import com.example.fitnessapp.ui.theme.common.GroupBox
+import com.example.fitnessapp.ui.common.BoxItem
+import com.example.fitnessapp.ui.common.BoxItem1
+import com.example.fitnessapp.ui.common.BoxItem2
+import com.example.fitnessapp.ui.common.GroupBox
 import com.example.fitnessapp.datastore.ProfileSettings
 import kotlinx.coroutines.launch
 
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(
+    navController: NavController
+) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val dataStore = ProfileSettings(context)
-    val username = dataStore.getUsername.collectAsState(initial = "%i")
-    val birthDate = dataStore.getBirthDate.collectAsState(initial = "%i")
-    val gender = dataStore.getGender.collectAsState(initial = "%i")
-    val height = dataStore.getHeight.collectAsState(initial = "%i")
-    val weight = dataStore.getWeight.collectAsState(initial = "%i")
-    val stepGoal = dataStore.getStepGoal.collectAsState(initial = "%i")
+    val username = dataStore.getUsername.collectAsState(initial = "")
+    val birthDate = dataStore.getBirthDate.collectAsState(initial = "")
+    val gender = dataStore.getGender.collectAsState(initial = -1)
+    val height = dataStore.getHeight.collectAsState(initial = -1)
+    val weight = dataStore.getWeight.collectAsState(initial = -1)
+    val stepGoal = dataStore.getStepGoal.collectAsState(initial = -1)
 
     Scaffold(
         topBar = {
             ProfileTopAppBar()
-        },
+        }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -49,7 +53,7 @@ fun ProfileScreen(navController: NavController) {
                         content = username.value!!,
                         onSaveContent = {
                             scope.launch {
-                                dataStore.setUsername(it)
+                                dataStore.saveUsername(it)
                             }
                         }
                     )
@@ -64,7 +68,7 @@ fun ProfileScreen(navController: NavController) {
                         keyboardType = BoxItem.KeyboardDate,
                         onSaveContent = {
                             scope.launch {
-                                dataStore.setBirthDate(it)
+                                dataStore.saveBirthDate(it)
                             }
                         }),
                     BoxItem2(
@@ -73,7 +77,7 @@ fun ProfileScreen(navController: NavController) {
                         keyboardType = BoxItem.KeyboardGender,
                         onSaveContent = {
                             scope.launch {
-                                dataStore.setGender(it)
+                                dataStore.saveGender(it)
                             }
                         }),
                     BoxItem2(
@@ -83,7 +87,7 @@ fun ProfileScreen(navController: NavController) {
                         keyboardType = BoxItem.KeyboardNumber,
                         onSaveContent = {
                             scope.launch {
-                                dataStore.setHeight(it)
+                                dataStore.saveHeight(it.toInt())
                             }
                         }),
                     BoxItem2(
@@ -93,7 +97,7 @@ fun ProfileScreen(navController: NavController) {
                         keyboardType = BoxItem.KeyboardNumber,
                         onSaveContent = {
                             scope.launch {
-                                dataStore.setWeight(it)
+                                dataStore.saveWeight(it.toInt())
                             }
                         })
                 )
@@ -107,7 +111,7 @@ fun ProfileScreen(navController: NavController) {
                         keyboardType = BoxItem.KeyboardNumber,
                         onSaveContent = {
                             scope.launch {
-                                dataStore.setStepGoal(it)
+                                dataStore.saveStepGoal(it.toInt())
                             }
                         })
                 )

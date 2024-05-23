@@ -1,4 +1,4 @@
-package com.example.fitnessapp.ui.theme.common
+package com.example.fitnessapp.ui.common
 
 import androidx.annotation.DrawableRes
 import androidx.compose.material3.MaterialTheme

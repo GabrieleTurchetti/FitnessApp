@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -17,68 +18,72 @@ class ProfileSettings(
         val USERNAME = stringPreferencesKey("username")
         val BIRTH_DATE = stringPreferencesKey("birth_date")
         val GENDER = stringPreferencesKey("gender")
-        val HEIGHT = stringPreferencesKey("height")
-        val WEIGHT = stringPreferencesKey("weight")
-        val STEP_GOAL = stringPreferencesKey("step_goal")
+        val HEIGHT = intPreferencesKey("height")
+        val WEIGHT = intPreferencesKey("weight")
+        val STEP_GOAL = intPreferencesKey("step_goal")
     }
 
-    val getUsername: Flow<String?> = context.dataStore.data.map { preferences ->
+    val getUsername: Flow<String> = context.dataStore.data.map { preferences ->
         preferences[USERNAME] ?: "Mario Rossi"
     }
 
-    val getBirthDate: Flow<String?> = context.dataStore.data.map { preferences ->
+    val getBirthDate: Flow<String> = context.dataStore.data.map { preferences ->
         preferences[BIRTH_DATE] ?: "01012000"
     }
 
-    val getGender: Flow<String?> = context.dataStore.data.map { preferences ->
+    val getGender: Flow<String> = context.dataStore.data.map { preferences ->
         preferences[GENDER] ?: "Maschio"
     }
 
-    val getHeight: Flow<String?> = context.dataStore.data.map { preferences ->
-        preferences[HEIGHT] ?: "175"
+    val getHeight: Flow<Int> = context.dataStore.data.map { preferences ->
+        preferences[HEIGHT] ?: 175
     }
 
-    val getWeight: Flow<String?> = context.dataStore.data.map { preferences ->
-        preferences[WEIGHT] ?: "70"
+    val getWeight: Flow<Int> = context.dataStore.data.map { preferences ->
+        preferences[WEIGHT] ?: 70
     }
 
-    val getStepGoal: Flow<String?> = context.dataStore.data.map { preferences ->
-        preferences[STEP_GOAL] ?: "1000"
+    val getStepGoal: Flow<Int> = context.dataStore.data.map { preferences ->
+        preferences[STEP_GOAL] ?: 1000
     }
 
-    suspend fun setUsername(name: String) {
+    val getHeightAndWeight: Flow<Pair<Int, Int>> = context.dataStore.data.map { preferences ->
+        Pair(preferences[HEIGHT] ?: 175, preferences[WEIGHT] ?: 70)
+    }
+
+    suspend fun saveUsername(username: String) {
         context.dataStore.edit { preferences ->
-            preferences[USERNAME] = name
+            preferences[USERNAME] = username
         }
     }
 
-    suspend fun setBirthDate(name: String) {
+    suspend fun saveBirthDate(birthDate: String) {
         context.dataStore.edit { preferences ->
-            preferences[BIRTH_DATE] = name
+            preferences[BIRTH_DATE] = birthDate
         }
     }
 
-    suspend fun setGender(name: String) {
+    suspend fun saveGender(gender: String) {
         context.dataStore.edit { preferences ->
-            preferences[GENDER] = name
+            preferences[GENDER] = gender
         }
     }
 
-    suspend fun setHeight(name: String) {
+    suspend fun saveHeight(height: Int) {
         context.dataStore.edit { preferences ->
-            preferences[HEIGHT] = name
+            preferences[HEIGHT] = height
         }
     }
 
-    suspend fun setWeight(name: String) {
+    suspend fun saveWeight(weight: Int) {
         context.dataStore.edit { preferences ->
-            preferences[WEIGHT] = name
+            preferences[WEIGHT] = weight
         }
     }
 
-    suspend fun setStepGoal(name: String) {
+    suspend fun saveStepGoal(stepGoal: Int) {
         context.dataStore.edit { preferences ->
-            preferences[STEP_GOAL] = name
+            preferences[STEP_GOAL] = stepGoal
         }
     }
 }

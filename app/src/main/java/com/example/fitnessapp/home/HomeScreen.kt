@@ -1,17 +1,10 @@
 package com.example.fitnessapp.home
 
-import android.Manifest
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
-import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.Manifest.permission.ACTIVITY_RECOGNITION
-import android.content.Intent
 import android.icu.text.DecimalFormat
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -33,7 +25,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -45,30 +36,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.fitnessapp.MainActivity
-import com.example.fitnessapp.caloriesburned.CaloriesBurnedRepository
-import com.example.fitnessapp.stepcounter.StepCounterViewModel
+import com.example.fitnessapp.burnedcalories.BurnedCaloriesRepository
 import com.example.fitnessapp.datastore.ProfileSettings
-import com.example.fitnessapp.location.LocationService
+import com.example.fitnessapp.extentions.kilometersTravelled
+import com.example.fitnessapp.location.LocationRepository
 import com.example.fitnessapp.stepcounter.StepCounterRepository
-import com.example.fitnessapp.utils.getBurnedCalories
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.android.gms.maps.CameraUpdateFactory
 import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -82,18 +62,25 @@ fun HomeScreen(
     val context = LocalContext.current
     val dataStore = ProfileSettings(context)
     var steps by remember { mutableStateOf(0) }
-    val stepGoal = dataStore.getStepGoal.collectAsState(initial = "0")
-    val height = dataStore.getHeight.collectAsState(initial = "0")
-    val weight = dataStore.getWeight.collectAsState(initial = "0")
+    val stepGoal = dataStore.getStepGoal.collectAsState(initial = 0)
     val showDatePicker = remember { mutableStateOf(false) }
     var calories by remember { mutableStateOf(0) }
     var date = remember { mutableStateOf(LocalDate.now().toString()) }
+    var kilometersTravelled by remember { mutableStateOf(0.0) }
 
     LaunchedEffect(date){
         while (true) {
             steps = StepCounterRepository(MainActivity.db.fitnessDao()).getStepsByDate(date.value)
-            calories = CaloriesBurnedRepository(MainActivity.db.fitnessDao()).getCaloriesByDate(date.value)
+            calories = BurnedCaloriesRepository(MainActivity.db.fitnessDao()).getCaloriesByDate(date.value)
             if (steps == -1) steps = 0
+            if (calories == -1) calories = 0
+            delay(1000)
+        }
+    }
+
+    LaunchedEffect(date){
+        while (true) {
+            kilometersTravelled = LocationRepository(MainActivity.db.fitnessDao()).getLocationsByDate(date.value).kilometersTravelled()
             delay(1000)
         }
     }
@@ -124,7 +111,7 @@ fun HomeScreen(
                             .weight(2f),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressBar(steps = steps, stepsGoal = stepGoal.value!!.toInt())
+                        CircularProgressBar(steps = steps, stepsGoal = stepGoal.value)
                     }
                     Column(
                         modifier = Modifier
@@ -151,7 +138,7 @@ fun HomeScreen(
                                     .weight(1f),
                             ) {
                                 Text("Kilometri:")
-                                Text("1 km")
+                                Text("$kilometersTravelled km")
                             }
                         }
                         Row(

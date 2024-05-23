@@ -3,11 +3,9 @@ package com.example.fitnessapp.location
 import android.util.Log
 import com.example.fitnessapp.room.FitnessDao
 import com.example.fitnessapp.room.Location
-import com.example.fitnessapp.room.Steps
-import com.example.fitnessapp.utils.round
+import com.example.fitnessapp.extentions.round
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 

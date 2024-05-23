@@ -1,7 +1,7 @@
 package com.example.fitnessapp.exercises.musclegroup
 
 import androidx.annotation.DrawableRes
-import com.example.fitnessapp.ui.theme.common.CardItem
+import com.example.fitnessapp.ui.common.CardItem
 import com.example.fitnessapp.R
 import com.example.fitnessapp.exercises.musclegroup.exercise.Exercise
 

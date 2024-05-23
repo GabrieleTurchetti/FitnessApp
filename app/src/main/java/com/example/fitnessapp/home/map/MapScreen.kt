@@ -15,7 +15,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import com.example.fitnessapp.MainActivity
 import com.example.fitnessapp.R
-import com.example.fitnessapp.caloriesburned.CaloriesBurnedRepository
 import com.example.fitnessapp.location.LocationRepository
 import com.example.fitnessapp.stepcounter.StepCounterRepository
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -46,7 +45,7 @@ fun MapScreen(
     LaunchedEffect(Unit){
         while (true) {
             locations = LocationRepository(MainActivity.db.fitnessDao()).getLocationsByDate(date ?: LocalDate.now().toString())
-            cameraPositionState.move(CameraUpdateFactory.newLatLng(locations.last()))
+            if (!locations.isEmpty()) cameraPositionState.move(CameraUpdateFactory.newLatLng(locations.last()))
             Log.d("LIST", "${locations.size}, $date")
             delay(1000)
         }

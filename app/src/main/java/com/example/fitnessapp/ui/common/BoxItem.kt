@@ -1,14 +1,15 @@
-package com.example.fitnessapp.ui.theme.common
+package com.example.fitnessapp.ui.common
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.ui.text.input.KeyboardType
 
 abstract class BoxItem(
     open val title: String? = null,
-    open val content: String? = null,
+    open val content: Any,
     open val unit: String? = null,
-    open val keyboardType: BoxItemKeyboardType? = KeyboardText,
-    open val onSaveContent: ((String) -> Unit)? = {},
-    open val onBoxItemClick: (() -> Unit)? = {}
+    open val keyboardType: BoxItemKeyboardType = KeyboardText,
+    open val onSaveContent: (String) -> Unit,
 ) {
     abstract fun getType(): Int
 
@@ -32,9 +33,9 @@ abstract class BoxItem(
     }
 }
 class BoxItem1(
-    override val content: String,
-    override val keyboardType: BoxItemKeyboardType? = KeyboardText,
-    override val onSaveContent: ((String) -> Unit)? = {},
+    override val content: Any,
+    override val keyboardType: BoxItemKeyboardType = KeyboardText,
+    override val onSaveContent: (String) -> Unit
 ) : BoxItem(
     content = content,
     keyboardType = keyboardType,
@@ -47,10 +48,10 @@ class BoxItem1(
 
 class BoxItem2(
     override val title: String,
-    override val content: String,
+    override val content: Any,
     override val unit: String? = null,
-    override val keyboardType: BoxItemKeyboardType? = KeyboardText,
-    override val onSaveContent: ((String) -> Unit)? = {},
+    override val keyboardType: BoxItemKeyboardType = KeyboardText,
+    override val onSaveContent: (String) -> Unit
 ) : BoxItem(
     content = content,
     unit = unit,
@@ -59,17 +60,5 @@ class BoxItem2(
 ) {
     override fun getType(): Int {
         return 2
-    }
-}
-
-class BoxItem3(
-    override val title: String,
-    override val onBoxItemClick: (() -> Unit)? = {}
-) : BoxItem(
-    title = title,
-    onBoxItemClick = onBoxItemClick
-) {
-    override fun getType(): Int {
-        return 3
     }
 }

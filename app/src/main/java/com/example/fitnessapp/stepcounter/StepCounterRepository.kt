@@ -10,25 +10,24 @@ import java.time.LocalDate
 class StepCounterRepository(
     private val fitnessDao: FitnessDao,
 ) {
-    suspend fun storeSteps(steps: Int, todayStepsAtLastReboot: Int, initialSteps: Int) = withContext(Dispatchers.IO) {
+    suspend fun insertSteps(steps: Int, todayStepsAtLastReboot: Int, initialSteps: Int) = withContext(Dispatchers.IO) {
         val stepCounter = Steps(
             date = LocalDate.now().toString(),
             steps = steps,
             stepsAtLastReboot = todayStepsAtLastReboot,
             initialSteps = initialSteps
         )
-        Log.d("STEP_COUNT_LISTENER", "Storing steps: $stepCounter")
         fitnessDao.insertSteps(stepCounter)
     }
 
     suspend fun getStepsByDate(date: String = LocalDate.now().toString()): Int = withContext(Dispatchers.IO) {
-        val dateSteps = fitnessDao.getStepsByDate(date = date)
+        val steps = fitnessDao.getStepsByDate(date = date)
 
-        if (dateSteps.isEmpty()) {
+        if (steps.isEmpty()) {
             -1
         }
         else {
-            dateSteps.first().steps
+            steps.first().steps
         }
     }
 
@@ -40,7 +39,6 @@ class StepCounterRepository(
             -1
         }
         else {
-            Log.d("STEP_COUNT_LISTENER", "Today Steps: $todaySteps")
             todaySteps.first().stepsAtLastReboot
         }
     }
@@ -52,7 +50,6 @@ class StepCounterRepository(
             -1
         }
         else {
-            Log.d("STEP_COUNT_LISTENER", "Today Steps: $dateStepCounter")
             dateStepCounter.first().initialSteps
         }
     }

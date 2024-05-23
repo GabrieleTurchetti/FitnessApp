@@ -1,5 +1,6 @@
-package com.example.fitnessapp.ui.theme.common
+package com.example.fitnessapp.ui.common
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -85,8 +86,8 @@ fun BoxItem1(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (item.content != null && item.content != "%i") {
-            var content by remember { mutableStateOf(TextFieldValue(item.content!!)) }
+        if (item.content != "" && item.content != -1) {
+            var content by remember { mutableStateOf(TextFieldValue(item.content.toString())) }
 
             LaunchedEffect(isEnabled) {
                 if (isEnabled) {
@@ -101,7 +102,7 @@ fun BoxItem1(
             BasicTextField(
                 modifier = Modifier
                     .onFocusChanged {
-                        if (!it.isFocused && !isSaved) content = TextFieldValue(item.content!!)
+                        if (!it.isFocused && !isSaved) content = TextFieldValue(item.content.toString())
                         isEnabled = it.isFocused
                         isSaved = false
                     }
@@ -121,18 +122,18 @@ fun BoxItem1(
                 visualTransformation = if (item.keyboardType == BoxItem.KeyboardDate) DateTransformation() else VisualTransformation.None,
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Next,
-                    keyboardType = item.keyboardType?.getType()!!,
+                    keyboardType = item.keyboardType.getType(),
                     capitalization = KeyboardCapitalization.Sentences
                 ),
                 keyboardActions = KeyboardActions(
                     onNext = {
                         if (item.keyboardType == BoxItem.KeyboardDate) {
                             if (content.text.length == 8) {
-                                item.onSaveContent!!(content.text)
+                                item.onSaveContent(content.text)
                                 isSaved = true
                             }
                             else {
-                                content = TextFieldValue(item.content!!)
+                                content = TextFieldValue(item.content.toString())
                                 Toast.makeText(
                                     context,
                                     "Il valore inserito non è valido",
@@ -143,7 +144,7 @@ fun BoxItem1(
                         else if (item.keyboardType == BoxItem.KeyboardNumber) {
                             if (item.unit == null) {
                                 if (content.text.toInt() < 100) {
-                                    content = TextFieldValue(item.content!!)
+                                    content = TextFieldValue(item.content.toString())
                                     Toast.makeText(
                                         context,
                                         "Il valore inserito non è valido",
@@ -151,16 +152,16 @@ fun BoxItem1(
                                     ).show()
                                 }
                                 else {
-                                    item.onSaveContent!!(content.text)
+                                    item.onSaveContent(content.text)
                                     isSaved = true
                                 }
                             }
                             else {
-                                if (content.text.toInt() >= 30 && content.text.toInt() <= 300) {
-                                    item.onSaveContent!!(content.text)
+                                if (content.text.toInt() in 30..300) {
+                                    item.onSaveContent(content.text)
                                     isSaved = true
                                 } else {
-                                    content = TextFieldValue(item.content!!)
+                                    content = TextFieldValue(item.content.toString())
                                     Toast.makeText(
                                         context,
                                         "Il valore inserito non è valido",
@@ -170,7 +171,7 @@ fun BoxItem1(
                             }
                         }
                         else if (content.text == "") {
-                            content = TextFieldValue(item.content!!)
+                            content = TextFieldValue(item.content.toString())
                             Toast.makeText(
                                 context,
                                 "Il valore inserito non è valido",
@@ -178,7 +179,7 @@ fun BoxItem1(
                             ).show()
                         }
                         else {
-                            item.onSaveContent!!(content.text)
+                            item.onSaveContent(content.text)
                             isSaved = true
                         }
 
@@ -229,21 +230,21 @@ fun BoxItem2(
         Row(
             horizontalArrangement = Arrangement.End
         ) {
-            if (item.content != null && item.content != "%i") {
-                var content by remember { mutableStateOf(item.content) }
+            if (item.content != "" && item.content != -1) {
+                var content by remember { mutableStateOf(item.content.toString()) }
 
                 BasicTextField(
                     modifier = Modifier
                         .onFocusChanged {
                             if (!it.isFocused && !isSaved) {
-                                content = item.content
+                                content = item.content.toString()
                             }
 
                             isFocused = it.isFocused
                             isSaved = false
                         }
                         .defaultMinSize(minWidth = 100.dp),
-                    value = content!!,
+                    value = content,
                     cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
                     singleLine = true,
                     textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.End),
@@ -257,18 +258,18 @@ fun BoxItem2(
                     visualTransformation = if (item.keyboardType == BoxItem.KeyboardDate) DateTransformation() else VisualTransformation.None,
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Next,
-                        keyboardType = item.keyboardType?.getType()!!,
+                        keyboardType = item.keyboardType.getType(),
                         capitalization = KeyboardCapitalization.Sentences
                     ),
                     keyboardActions = KeyboardActions(
                         onNext = {
                             if (item.keyboardType == BoxItem.KeyboardDate) {
-                                if (content!!.length == 8) {
-                                    item.onSaveContent!!(content!!)
+                                if (content.length == 8) {
+                                    item.onSaveContent(content)
                                     isSaved = true
                                 }
                                 else {
-                                    content = item.content
+                                    content = item.content.toString()
                                     Toast.makeText(
                                         context,
                                         "Il valore inserito non è valido",
@@ -278,8 +279,8 @@ fun BoxItem2(
                             }
                             else if (item.keyboardType == BoxItem.KeyboardNumber) {
                                 if (item.unit == null) {
-                                    if (content!!.toInt() < 100) {
-                                        content = item.content
+                                    if (content.toInt() < 100) {
+                                        content = item.content.toString()
                                         Toast.makeText(
                                             context,
                                             "Il valore inserito non è valido",
@@ -287,17 +288,17 @@ fun BoxItem2(
                                         ).show()
                                     }
                                     else {
-                                        item.onSaveContent!!(content!!)
+                                        item.onSaveContent(content)
                                         isSaved = true
                                     }
                                 }
                                 else  {
-                                    if (content!!.toInt() >= 30 && content!!.toInt() <= 300) {
-                                        item.onSaveContent!!(content!!)
+                                    if (content.toInt() in 30..300) {
+                                        item.onSaveContent(content)
                                         isSaved = true
                                     }
                                     else {
-                                        content = item.content
+                                        content = item.content.toString()
                                         Toast.makeText(
                                             context,
                                             "Il valore inserito non è valido",
@@ -307,7 +308,7 @@ fun BoxItem2(
                                 }
                             }
                             else if (content == "") {
-                                content = item.content!!
+                                content = item.content.toString()
                                 Toast.makeText(
                                     context,
                                     "Il valore inserito non è valido",
@@ -315,7 +316,7 @@ fun BoxItem2(
                                 ).show()
                             }
                             else {
-                                item.onSaveContent!!(content!!)
+                                item.onSaveContent(content)
                                 isSaved = true
                             }
 
