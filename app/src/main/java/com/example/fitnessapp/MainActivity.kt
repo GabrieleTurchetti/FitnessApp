@@ -22,6 +22,7 @@ import androidx.room.Room
 import com.example.fitnessapp.bottomnavigationbar.BottomNavigationBar
 import com.example.fitnessapp.location.LocationService
 import com.example.fitnessapp.room.AppDatabase
+import com.example.fitnessapp.stepcounter.StepCounterService
 import com.example.fitnessapp.stepcounter.StepCounterViewModel
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -75,28 +76,15 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                DisposableEffect(lifecycleOwner, isActivityRecognitionGranted) {
-                    val observer = LifecycleEventObserver { _, event ->
-                        when (event) {
-                            Lifecycle.Event.ON_RESUME -> if (isActivityRecognitionGranted) stepCounterViewModel.registerListenerStepCounter()
-                            Lifecycle.Event.ON_PAUSE -> stepCounterViewModel.unregisterListenerStepCounter()
-                            else -> {}
-                        }
-                    }
-
-                    lifecycleOwner.lifecycle.addObserver(observer)
-
-                    onDispose {
-                        lifecycleOwner.lifecycle.removeObserver(observer)
-                    }
-                }
-
                 permissionsState.permissions.forEach {
                     when (it.permission) {
                         Manifest.permission.ACTIVITY_RECOGNITION -> {
                             if (it.status.isGranted) {
                                 isActivityRecognitionGranted = true
-                                stepCounterViewModel.init(context)
+                                Intent(context, StepCounterService::class.java).apply {
+                                    action = StepCounterService.ACTION_START
+                                    context.startService(this)
+                                }
                             }
                         }
                         Manifest.permission.ACCESS_COARSE_LOCATION -> {

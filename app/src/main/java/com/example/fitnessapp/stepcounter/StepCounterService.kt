@@ -1,53 +1,88 @@
 package com.example.fitnessapp.stepcounter
 
+import android.app.NotificationManager
+import android.app.Service
 import android.content.Context
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
+import android.content.Intent
+import android.os.IBinder
 import android.util.Log
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.core.app.NotificationCompat
 import com.example.fitnessapp.MainActivity
-import com.example.fitnessapp.stepcounter.calories.CaloriesRepository
 import com.example.fitnessapp.datastore.ProfileSettings
+import com.example.fitnessapp.extentions.round
+import com.example.fitnessapp.location.LocationClient
+import com.example.fitnessapp.location.LocationRepository
+import com.example.fitnessapp.stepcounter.calories.CaloriesRepository
 import com.example.fitnessapp.stepcounter.steps.StepsRepository
 import com.example.fitnessapp.utils.getBurnedCalories
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.cancellable
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-
-private const val TAG = "STEP_COUNT_LISTENER"
-
 @ExperimentalMaterial3Api
 @ExperimentalPermissionsApi
-class StepCounter(
-    val context: Context
-) {
-    val sensorManager by lazy { context.getSystemService(Context.SENSOR_SERVICE) as SensorManager }
-    val sensor: Sensor? by lazy { sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) }
+class StepCounterService : Service() {
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     val scope = CoroutineScope(Dispatchers.IO)
-    var listener: SensorEventListener? = null
+    private lateinit var stepCounterClient: StepCounterClient
 
-    fun steps() {
-        Log.d(TAG, "Registering sensor listener... ")
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
+    }
 
-        listener = object : SensorEventListener {
-            override fun onSensorChanged(event: SensorEvent?) {
-                if (event == null) return
-                val stepsSinceLastReboot = event.values[0].toInt()
-                Log.d(TAG, "Steps since last reboot: $stepsSinceLastReboot")
+    override fun onCreate() {
+        super.onCreate()
+        stepCounterClient = StepCounterClient(
+            applicationContext
+        )
+    }
 
-                Log.d("PIPPOZ1", "$stepsSinceLastReboot")
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        when (intent?.action) {
+            ACTION_START -> start()
+            ACTION_STOP -> stop()
+        }
+
+        return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun start() {
+        val notification = NotificationCompat.Builder(this, "fitness")
+            .setContentTitle("Tracking steps...")
+            .setContentText("Steps: null")
+            .setSmallIcon(android.R.drawable.ic_menu_mylocation)
+            .setOngoing(true)
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        Log.d("TAGS", "---")
+
+        stepCounterClient
+            .getStepCounterUpdates(1000L)
+            .catch { e -> e.printStackTrace() }
+            .onEach { stepsSinceLastReboot ->
+                val updatedNotification = notification.setContentText(
+                    "StepCounter: $stepsSinceLastReboot"
+                )
+                notificationManager.notify(2, updatedNotification.build())
+                Log.d("TAGS", "{$stepsSinceLastReboot}")
 
                 scope.launch {
-                    val todaySteps = StepsRepository(MainActivity.db.fitnessDao()).getStepsByDate(LocalDate.now().toString())
+                    val todaySteps = StepsRepository(MainActivity.db.fitnessDao()).getStepsByDate(
+                        LocalDate.now().toString())
                     val todayStepsAtLastReboot = StepsRepository(MainActivity.db.fitnessDao()).getTodayStepsAtLastReboot()
-                    val initialSteps = StepsRepository(MainActivity.db.fitnessDao()).getInitialStepsByDate(LocalDate.now().toString())
-                    val dataStore = ProfileSettings(context)
+                    val initialSteps = StepsRepository(MainActivity.db.fitnessDao()).getInitialStepsByDate(
+                        LocalDate.now().toString())
+                    val dataStore = ProfileSettings(applicationContext)
 
                     launch {
                         dataStore.getHeightAndWeight.cancellable().collect {
@@ -95,29 +130,22 @@ class StepCounter(
                         }
                     }
                 }
-            }
+            }.launchIn(serviceScope)
 
-            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-                Log.d(TAG, "Accuracy changed to: $accuracy")
-            }
-        }
+        startForeground(2, notification.build())
     }
 
-    fun registerListener() {
-        if (listener != null) {
-            val supportedAndEnabled = sensorManager.registerListener(
-                listener,
-                sensor,
-                SensorManager.SENSOR_DELAY_NORMAL
-            )
-
-            Log.d(TAG, "Sensor listener registered: $supportedAndEnabled")
-        }
+    private fun stop() {
+        stopSelf()
     }
 
-    fun unregisterListener() {
-        if (listener != null) {
-            sensorManager.unregisterListener(listener)
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        serviceScope.cancel()
+    }
+
+    companion object {
+        const val ACTION_START = "ACTION_START"
+        const val ACTION_STOP = "ACTION_STOP"
     }
 }

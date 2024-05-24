@@ -112,7 +112,7 @@ fun BoxItem1(
                 cursorBrush = SolidColor(MaterialTheme.colorScheme.onSurface),
                 enabled = isEnabled,
                 singleLine = true,
-                textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.Start, fontSize = 20.sp),
+                textStyle = LocalTextStyle.current.copy(color = MaterialTheme.colorScheme.onSurface, textAlign = TextAlign.Start, fontSize = 18.sp),
                 onValueChange = {
                     if (item.keyboardType != BoxItem.KeyboardDate) {
                         content = it

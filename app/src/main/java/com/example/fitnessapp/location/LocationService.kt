@@ -25,8 +25,7 @@ import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
 @ExperimentalPermissionsApi
-class LocationService: Service() {
-
+class LocationService : Service() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     val scope = CoroutineScope(Dispatchers.IO)
     private lateinit var locationClient: LocationClient
@@ -53,7 +52,7 @@ class LocationService: Service() {
     }
 
     private fun start() {
-        val notification = NotificationCompat.Builder(this, "location")
+        val notification = NotificationCompat.Builder(this, "fitness")
             .setContentTitle("Tracking location...")
             .setContentText("Location: null")
             .setSmallIcon(android.R.drawable.ic_menu_mylocation)
@@ -81,8 +80,7 @@ class LocationService: Service() {
                         LocationRepository(MainActivity.db.fitnessDao()).insertLocation(currentLocation)
                     }
                 }
-            }
-            .launchIn(serviceScope)
+            }.launchIn(serviceScope)
 
         startForeground(1, notification.build())
     }

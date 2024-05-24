@@ -1,13 +1,12 @@
-package com.example.fitnessapp.stepcounter
+package com.example.fitnessapp.stepcounter.steps
 
-import android.util.Log
 import com.example.fitnessapp.room.FitnessDao
 import com.example.fitnessapp.room.Steps
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
-class StepCounterRepository(
+class StepsRepository(
     private val fitnessDao: FitnessDao,
 ) {
     suspend fun insertSteps(steps: Int, todayStepsAtLastReboot: Int, initialSteps: Int) = withContext(Dispatchers.IO) {

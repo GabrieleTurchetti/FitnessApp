@@ -3,7 +3,6 @@ package com.example.fitnessapp.home
 import android.icu.text.DecimalFormat
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,16 +38,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.fitnessapp.MainActivity
-import com.example.fitnessapp.burnedcalories.BurnedCaloriesRepository
+import com.example.fitnessapp.stepcounter.calories.CaloriesRepository
 import com.example.fitnessapp.datastore.ProfileSettings
 import com.example.fitnessapp.extentions.kilometersTravelled
+import com.example.fitnessapp.extentions.round
 import com.example.fitnessapp.location.LocationRepository
-import com.example.fitnessapp.stepcounter.StepCounterRepository
+import com.example.fitnessapp.stepcounter.steps.StepsRepository
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.android.gms.maps.CameraUpdateFactory
 import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -70,8 +68,8 @@ fun HomeScreen(
 
     LaunchedEffect(date){
         while (true) {
-            steps = StepCounterRepository(MainActivity.db.fitnessDao()).getStepsByDate(date.value)
-            calories = BurnedCaloriesRepository(MainActivity.db.fitnessDao()).getCaloriesByDate(date.value)
+            steps = StepsRepository(MainActivity.db.fitnessDao()).getStepsByDate(date.value)
+            calories = CaloriesRepository(MainActivity.db.fitnessDao()).getCaloriesByDate(date.value)
             if (steps == -1) steps = 0
             if (calories == -1) calories = 0
             delay(1000)
@@ -80,7 +78,7 @@ fun HomeScreen(
 
     LaunchedEffect(date){
         while (true) {
-            kilometersTravelled = LocationRepository(MainActivity.db.fitnessDao()).getLocationsByDate(date.value).kilometersTravelled()
+            kilometersTravelled = LocationRepository(MainActivity.db.fitnessDao()).getLocationsByDate(date.value).kilometersTravelled().round(2)
             delay(1000)
         }
     }
@@ -130,7 +128,10 @@ fun HomeScreen(
                                     .weight(1f),
                             ) {
                                 Text("Passi:")
-                                Text("$steps")
+                                Text(
+                                    "$steps",
+                                    fontSize = 24.sp
+                                )
                             }
                             Column(
                                 modifier = Modifier
@@ -138,7 +139,8 @@ fun HomeScreen(
                                     .weight(1f),
                             ) {
                                 Text("Kilometri:")
-                                Text("$kilometersTravelled km")
+                                Text("$kilometersTravelled km",
+                                    fontSize = 24.sp)
                             }
                         }
                         Row(
@@ -154,7 +156,8 @@ fun HomeScreen(
                                     .weight(1f),
                             )  {
                                 Text("Calorie:")
-                                Text("$calories kcal")
+                                Text("$calories kcal",
+                                    fontSize = 24.sp)
                             }
                             Column(
                                 modifier = Modifier
@@ -162,7 +165,8 @@ fun HomeScreen(
                                     .weight(1f),
                             ) {
                                 Text("Giorno:")
-                                Text(LocalDate.parse(date.value, DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+                                Text(LocalDate.parse(date.value, DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                                    fontSize = 24.sp)
                             }
                         }
                     }

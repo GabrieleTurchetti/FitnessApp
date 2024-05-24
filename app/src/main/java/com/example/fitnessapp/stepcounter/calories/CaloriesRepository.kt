@@ -1,13 +1,12 @@
-package com.example.fitnessapp.burnedcalories
+package com.example.fitnessapp.stepcounter.calories
 
 import com.example.fitnessapp.room.Calories
 import com.example.fitnessapp.room.FitnessDao
-import com.example.fitnessapp.room.Steps
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
-class BurnedCaloriesRepository(
+class CaloriesRepository(
     private val fitnessDao: FitnessDao,
 ) {
     suspend fun insertCalories(calories: Int) = withContext(Dispatchers.IO) {
