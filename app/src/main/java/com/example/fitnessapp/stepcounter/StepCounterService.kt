@@ -59,8 +59,7 @@ class StepCounterService : Service() {
 
     private fun start() {
         val notification = NotificationCompat.Builder(this, "fitness")
-            .setContentTitle("Tracking steps...")
-            .setContentText("Steps: null")
+            .setContentTitle("Tracciamento passi attivo")
             .setSmallIcon(android.R.drawable.ic_menu_mylocation)
             .setOngoing(true)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -70,11 +69,6 @@ class StepCounterService : Service() {
             .getStepCounterUpdates(1000L)
             .catch { e -> e.printStackTrace() }
             .onEach { stepsSinceLastReboot ->
-                val updatedNotification = notification.setContentText(
-                    "StepCounter: $stepsSinceLastReboot"
-                )
-                notificationManager.notify(2, updatedNotification.build())
-                Log.d("TAGS", "{$stepsSinceLastReboot}")
 
                 scope.launch {
                     val todaySteps = StepsRepository(MainActivity.db.fitnessDao()).getStepsByDate(
@@ -96,24 +90,26 @@ class StepCounterService : Service() {
                         }
                     }
 
-                    Log.d("PIPPOZ", "$stepsSinceLastReboot")
+                    var currentTodaySteps = 0
 
-                    if (stepsSinceLastReboot <= todaySteps) { // il reboot è stato fatto oggi
+                    if (stepsSinceLastReboot <= todaySteps) {
                         if (stepsSinceLastReboot == 0) {
+                            currentTodaySteps = todaySteps
                             StepsRepository(MainActivity.db.fitnessDao()).insertSteps(
-                                todaySteps,
-                                todaySteps,
+                                currentTodaySteps,
+                                currentTodaySteps,
                                 initialSteps
                             )
                         }
                         else {
+                            currentTodaySteps = stepsSinceLastReboot + todayStepsAtLastReboot
                             StepsRepository(MainActivity.db.fitnessDao()).insertSteps(
-                                stepsSinceLastReboot + todayStepsAtLastReboot,
+                                currentTodaySteps,
                                 todayStepsAtLastReboot,
                                 initialSteps
                             )
                         }
-                    } else { // il reboot è stato fatto prima di oggi
+                    } else {
                         if (todaySteps == -1) {
                             StepsRepository(MainActivity.db.fitnessDao()).insertSteps(
                                 0,
@@ -122,11 +118,24 @@ class StepCounterService : Service() {
                             )
                         }
                         else {
+                            currentTodaySteps = stepsSinceLastReboot - initialSteps
                             StepsRepository(MainActivity.db.fitnessDao()).insertSteps(
-                                stepsSinceLastReboot - initialSteps,
-                                stepsSinceLastReboot - initialSteps,
+                                currentTodaySteps,
+                                currentTodaySteps,
                                 initialSteps
                             )
+                        }
+                    }
+
+                    launch {
+                        dataStore.getStepGoal.cancellable().collect {
+                            if (currentTodaySteps >= it) {
+                                val notification = NotificationCompat.Builder(applicationContext, "fitness")
+                                    .setContentTitle("Obiettivo passi raggiunto!")
+                                    .setContentText("Passi: $currentTodaySteps / $it")
+                                    .setSmallIcon(android.R.drawable.ic_menu_mylocation)
+                                notificationManager.notify(3, notification.build())
+                            }
                         }
                     }
                 }

@@ -43,6 +43,7 @@ import com.example.fitnessapp.MainActivity
 import com.example.fitnessapp.stepcounter.calories.CaloriesRepository
 import com.example.fitnessapp.datastore.ProfileSettings
 import com.example.fitnessapp.extentions.kilometersTravelled
+import com.example.fitnessapp.extentions.reduceLocations
 import com.example.fitnessapp.extentions.round
 import com.example.fitnessapp.location.LocationRepository
 import com.example.fitnessapp.stepcounter.steps.StepsRepository
@@ -78,7 +79,7 @@ fun HomeScreen(
 
     LaunchedEffect(date){
         while (true) {
-            kilometersTravelled = LocationRepository(MainActivity.db.fitnessDao()).getLocationsByDate(date.value).kilometersTravelled().round(2)
+            kilometersTravelled = LocationRepository(MainActivity.db.fitnessDao()).getLocationsByDate(date.value).kilometersTravelled().round(2, 1f)
             delay(1000)
         }
     }

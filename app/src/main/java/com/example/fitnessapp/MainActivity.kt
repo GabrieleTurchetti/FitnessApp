@@ -3,7 +3,6 @@ package com.example.fitnessapp
 import android.Manifest
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -17,13 +16,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.room.Room
 import com.example.fitnessapp.bottomnavigationbar.BottomNavigationBar
 import com.example.fitnessapp.location.LocationService
 import com.example.fitnessapp.room.AppDatabase
 import com.example.fitnessapp.stepcounter.StepCounterService
-import com.example.fitnessapp.stepcounter.StepCounterViewModel
 import com.example.fitnessapp.ui.theme.FitnessAppTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -47,7 +44,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             FitnessAppTheme {
-                val stepCounterViewModel: StepCounterViewModel by viewModels()
                 val context = LocalContext.current
                 val lifecycleOwner = LocalLifecycleOwner.current
                 var isActivityRecognitionGranted by remember { mutableStateOf(false) }

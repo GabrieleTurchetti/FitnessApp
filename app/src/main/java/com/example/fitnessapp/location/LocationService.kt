@@ -53,26 +53,17 @@ class LocationService : Service() {
 
     private fun start() {
         val notification = NotificationCompat.Builder(this, "fitness")
-            .setContentTitle("Tracking location...")
-            .setContentText("Location: null")
+            .setContentTitle("Tracciamento percorso attivo")
             .setSmallIcon(android.R.drawable.ic_menu_mylocation)
             .setOngoing(true)
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         locationClient
             .getLocationUpdates(1000L)
             .catch { e -> e.printStackTrace() }
             .onEach { location ->
-                val lat = location.latitude.toString()
-                val long = location.longitude.toString()
-                val updatedNotification = notification.setContentText(
-                    "Location: ($lat, $long)"
-                )
-                notificationManager.notify(1, updatedNotification.build())
-
                 scope.launch {
                     val lastLocation = LocationRepository(MainActivity.db.fitnessDao()).getLastLocation()
-                    val currentLocation = LatLng(location.latitude.round(4), location.longitude.round(4))
+                    val currentLocation = LatLng(location.latitude.round(4, 0.5f), location.longitude.round(4, 0.5f))
                     Log.d("LOC", "Location: (${currentLocation.latitude}, ${currentLocation.longitude})")
 
                     if (lastLocation != currentLocation) {

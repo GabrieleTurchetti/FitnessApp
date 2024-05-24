@@ -16,7 +16,12 @@ fun List<LatLng>.kilometersTravelled(): Double {
     for (i in 1..this.size - 1) {
         distance = acos(sin(Math.toRadians(this[i - 1].latitude)) * sin(Math.toRadians(this[i].latitude)) + cos(Math.toRadians(this[i - 1].latitude)) * cos(Math.toRadians(this[i].latitude)) * cos(Math.toRadians(this[i].longitude - this[i - 1].longitude))) * earthRadius
         kilometersTravelled += if (!distance.isNaN()) distance else 0.0
+        Log.d("DIST", "$distance")
     }
 
     return kilometersTravelled
+}
+
+fun List<LatLng>.reduceLocations(step: Int): List<LatLng> {
+    return this.slice(0..this.size - 1 step step)
 }

@@ -1,6 +1,7 @@
 package com.example.fitnessapp.location
 
 import android.util.Log
+import com.example.fitnessapp.extentions.reduceLocations
 import com.example.fitnessapp.room.FitnessDao
 import com.example.fitnessapp.room.Location
 import com.example.fitnessapp.extentions.round
@@ -30,8 +31,8 @@ class LocationRepository(
         }
         else {
             dateLocations.map { location ->
-                LatLng(location.latitude.toDouble().round(4), location.longitude.toDouble().round(4))
-            }
+                LatLng(location.latitude.toDouble().round(4, 0.5f), location.longitude.toDouble().round(4, 0.5f))
+            }.reduceLocations(5)
         }
     }
 
@@ -43,7 +44,7 @@ class LocationRepository(
         }
         else {
             val lastLocation = dateLocations.last()
-            LatLng(lastLocation.latitude.toDouble().round(4), lastLocation.longitude.toDouble().round(4))
+            LatLng(lastLocation.latitude.toDouble().round(4, 0.5f), lastLocation.longitude.toDouble().round(4, 0.5f))
         }
     }
 }
