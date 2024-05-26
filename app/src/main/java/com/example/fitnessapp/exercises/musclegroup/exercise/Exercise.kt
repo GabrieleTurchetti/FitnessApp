@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import com.example.fitnessapp.ui.common.CardItem
-import com.example.fitnessapp.utils.getSnakeCaseFromCamelCase
+import com.example.fitnessapp.utils.camelCaseToSnakeCase
 
 data class Exercise(
     override val id: String = "",
@@ -25,7 +25,7 @@ data class Exercise(
         @Composable
         fun getGifResourceFromId(exerciseId: String?): Int {
             return LocalContext.current.resources.getIdentifier(
-                exerciseId?.getSnakeCaseFromCamelCase() + "_gif",
+                exerciseId?.camelCaseToSnakeCase() + "_gif",
                 "drawable",
                 LocalContext.current.packageName)
         }

@@ -1,16 +1,10 @@
 package com.example.fitnessapp.location
 
-import android.app.NotificationManager
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.IBinder
-import android.util.Log
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.core.app.NotificationCompat
-import com.example.fitnessapp.MainActivity
 import com.example.fitnessapp.extentions.round
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineScope
@@ -22,9 +16,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-
-@ExperimentalMaterial3Api
-@ExperimentalPermissionsApi
 class LocationService : Service() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     val scope = CoroutineScope(Dispatchers.IO)
@@ -52,28 +43,25 @@ class LocationService : Service() {
     }
 
     private fun start() {
-        val notification = NotificationCompat.Builder(this, "fitness")
+        val locationTrackingNotification = NotificationCompat.Builder(this, "fitness")
             .setContentTitle("Tracciamento percorso attivo")
             .setSmallIcon(android.R.drawable.ic_menu_mylocation)
             .setOngoing(true)
 
         locationClient
             .getLocationUpdates(1000L)
-            .catch { e -> e.printStackTrace() }
+            .catch { e ->
+                e.printStackTrace()
+            }
             .onEach { location ->
                 scope.launch {
-                    val lastLocation = LocationRepository(MainActivity.db.fitnessDao()).getLastLocation()
+                    val lastLocation = LocationRepository.getLastLocation()
                     val currentLocation = LatLng(location.latitude.round(4, 0.5f), location.longitude.round(4, 0.5f))
-                    Log.d("LOC", "Location: (${currentLocation.latitude}, ${currentLocation.longitude})")
-
-                    if (lastLocation != currentLocation) {
-                        Log.d("LOC", "Location: (${lastLocation.latitude}, ${lastLocation.longitude}), (${currentLocation.latitude}, ${currentLocation.longitude})")
-                        LocationRepository(MainActivity.db.fitnessDao()).insertLocation(currentLocation)
-                    }
+                    if (lastLocation != currentLocation) LocationRepository.insertLocation(currentLocation)
                 }
             }.launchIn(serviceScope)
 
-        startForeground(1, notification.build())
+        startForeground(1, locationTrackingNotification.build())
     }
 
     private fun stop() {

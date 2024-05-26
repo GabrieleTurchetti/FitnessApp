@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class ProfileSettings(
-    private val context: Context
+    val context: Context
 ) {
     companion object {
-        private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("ProfileSettings")
+        val Context.dataStore: DataStore<Preferences> by preferencesDataStore("ProfileSettings")
         val USERNAME = stringPreferencesKey("username")
         val BIRTH_DATE = stringPreferencesKey("birth_date")
         val GENDER = stringPreferencesKey("gender")
@@ -32,7 +32,7 @@ class ProfileSettings(
     }
 
     val getGender: Flow<String> = context.dataStore.data.map { preferences ->
-        preferences[GENDER] ?: "Maschio"
+        preferences[GENDER] ?: "Uomo"
     }
 
     val getHeight: Flow<Int> = context.dataStore.data.map { preferences ->

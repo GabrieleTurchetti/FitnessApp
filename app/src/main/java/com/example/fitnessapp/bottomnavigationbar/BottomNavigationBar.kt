@@ -2,7 +2,6 @@ package com.example.fitnessapp.bottomnavigationbar
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -29,8 +28,6 @@ import com.example.fitnessapp.home.map.MapScreen
 import com.example.fitnessapp.profile.ProfileScreen
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
-@ExperimentalMaterial3Api
-@ExperimentalPermissionsApi
 @Composable
 fun BottomNavigationBar() {
     var navigationSelectedItem by remember {
@@ -43,7 +40,7 @@ fun BottomNavigationBar() {
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             NavigationBar {
-                BottomNavigationItem().bottomNavigationItems().forEachIndexed { index, navigationItem ->
+                BottomNavigationItem.bottomNavigationItems().forEachIndexed { index, navigationItem ->
                     NavigationBarItem(
                         selected = index == navigationSelectedItem,
                         label = {
@@ -100,9 +97,7 @@ fun BottomNavigationBar() {
                 Screen.Profile.route,
 
             ) {
-                ProfileScreen(
-                    navController
-                )
+                ProfileScreen()
             }
             composable(
                 Screen.MuscleGroup.route,
@@ -116,13 +111,10 @@ fun BottomNavigationBar() {
             composable(
                 Screen.Exercise.route,
                 arguments = listOf(
-                    navArgument("muscleGroupId") { type = NavType.StringType },
                     navArgument("exerciseId") { type = NavType.StringType }
                 )
             ) { backStackEntry ->
                 ExerciseScreen(
-                    navController,
-                    backStackEntry.arguments?.getString("muscleGroupId"),
                     backStackEntry.arguments?.getString("exerciseId")
                 )
             }

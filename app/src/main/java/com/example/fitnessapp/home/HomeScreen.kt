@@ -39,21 +39,17 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.fitnessapp.MainActivity
 import com.example.fitnessapp.stepcounter.calories.CaloriesRepository
 import com.example.fitnessapp.datastore.ProfileSettings
 import com.example.fitnessapp.extentions.kilometersTravelled
-import com.example.fitnessapp.extentions.reduceLocations
 import com.example.fitnessapp.extentions.round
 import com.example.fitnessapp.location.LocationRepository
 import com.example.fitnessapp.stepcounter.steps.StepsRepository
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-@ExperimentalMaterial3Api
-@ExperimentalPermissionsApi
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navController: NavController
@@ -64,22 +60,20 @@ fun HomeScreen(
     val stepGoal = dataStore.getStepGoal.collectAsState(initial = 0)
     val showDatePicker = remember { mutableStateOf(false) }
     var calories by remember { mutableStateOf(0) }
-    var date = remember { mutableStateOf(LocalDate.now().toString()) }
+    val date = remember { mutableStateOf(LocalDate.now().toString()) }
     var kilometersTravelled by remember { mutableStateOf(0.0) }
 
     LaunchedEffect(date){
         while (true) {
-            steps = StepsRepository(MainActivity.db.fitnessDao()).getStepsByDate(date.value)
-            calories = CaloriesRepository(MainActivity.db.fitnessDao()).getCaloriesByDate(date.value)
-            if (steps == -1) steps = 0
-            if (calories == -1) calories = 0
+            steps = StepsRepository.getStepsByDate(date.value)
+            calories = CaloriesRepository.getCaloriesByDate(date.value)
             delay(1000)
         }
     }
 
     LaunchedEffect(date){
         while (true) {
-            kilometersTravelled = LocationRepository(MainActivity.db.fitnessDao()).getLocationsByDate(date.value).kilometersTravelled().round(2, 1f)
+            kilometersTravelled = LocationRepository.getLocationsByDate(date.value).kilometersTravelled().round(2, 1f)
             delay(1000)
         }
     }
@@ -166,8 +160,10 @@ fun HomeScreen(
                                     .weight(1f),
                             ) {
                                 Text("Giorno:")
-                                Text(LocalDate.parse(date.value, DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                                    fontSize = 24.sp)
+                                Text(
+                                    LocalDate.parse(date.value, DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                                    fontSize = 24.sp
+                                )
                             }
                         }
                     }
@@ -176,7 +172,7 @@ fun HomeScreen(
 
             if (showDatePicker.value) {
                 DatePickerDialog(
-                    onDismissRequest = { /*TODO*/ },
+                    onDismissRequest = {},
                     confirmButton = {
                         TextButton(
                             onClick = {
@@ -185,8 +181,8 @@ fun HomeScreen(
                                         timeInMillis = datePickerState.selectedDateMillis!!
                                     }
                                     if (selectedDate.before(Calendar.getInstance())) {
-                                        val format1 = SimpleDateFormat("yyyy-MM-dd")
-                                        date.value = format1.format(selectedDate.time)
+                                        val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+                                        date.value = dateFormat.format(selectedDate.time)
                                         showDatePicker.value = false
                                     } else {
                                         Toast.makeText(

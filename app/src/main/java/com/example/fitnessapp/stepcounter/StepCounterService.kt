@@ -5,20 +5,13 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
-import android.util.Log
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.core.app.NotificationCompat
-import com.example.fitnessapp.MainActivity
 import com.example.fitnessapp.datastore.ProfileSettings
-import com.example.fitnessapp.extentions.round
-import com.example.fitnessapp.location.LocationClient
-import com.example.fitnessapp.location.LocationRepository
 import com.example.fitnessapp.stepcounter.calories.CaloriesRepository
 import com.example.fitnessapp.stepcounter.steps.StepsRepository
 import com.example.fitnessapp.utils.getBurnedCalories
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -58,33 +51,30 @@ class StepCounterService : Service() {
     }
 
     private fun start() {
-        val notification = NotificationCompat.Builder(this, "fitness")
+        val stepTrackingNotification = NotificationCompat.Builder(this, "fitness")
             .setContentTitle("Tracciamento passi attivo")
             .setSmallIcon(android.R.drawable.ic_menu_mylocation)
             .setOngoing(true)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        Log.d("TAGS", "---")
 
         stepCounterClient
-            .getStepCounterUpdates(1000L)
-            .catch { e -> e.printStackTrace() }
+            .getStepCounterUpdates()
+            .catch { e ->
+                e.printStackTrace()
+            }
             .onEach { stepsSinceLastReboot ->
-
                 scope.launch {
-                    val todaySteps = StepsRepository(MainActivity.db.fitnessDao()).getStepsByDate(
-                        LocalDate.now().toString())
-                    val todayStepsAtLastReboot = StepsRepository(MainActivity.db.fitnessDao()).getTodayStepsAtLastReboot()
-                    val initialSteps = StepsRepository(MainActivity.db.fitnessDao()).getInitialStepsByDate(
-                        LocalDate.now().toString())
+                    val todaySteps = StepsRepository.getStepsByDate(LocalDate.now().toString())
+                    val todayStepsAtLastReboot = StepsRepository.getTodayStepsAtLastReboot()
+                    val initialSteps = StepsRepository.getInitialStepsByDate(LocalDate.now().toString())
                     val dataStore = ProfileSettings(applicationContext)
 
                     launch {
                         dataStore.getHeightAndWeight.cancellable().collect {
-                            Log.d("PROVA", "$stepsSinceLastReboot - $this")
                             val height = it.first
                             val weight = it.second
 
-                            CaloriesRepository(MainActivity.db.fitnessDao()).insertCalories(
+                            CaloriesRepository.insertCalories(
                                 getBurnedCalories(height, weight, todaySteps)
                             )
                         }
@@ -95,7 +85,7 @@ class StepCounterService : Service() {
                     if (stepsSinceLastReboot <= todaySteps) {
                         if (stepsSinceLastReboot == 0) {
                             currentTodaySteps = todaySteps
-                            StepsRepository(MainActivity.db.fitnessDao()).insertSteps(
+                            StepsRepository.insertSteps(
                                 currentTodaySteps,
                                 currentTodaySteps,
                                 initialSteps
@@ -103,15 +93,15 @@ class StepCounterService : Service() {
                         }
                         else {
                             currentTodaySteps = stepsSinceLastReboot + todayStepsAtLastReboot
-                            StepsRepository(MainActivity.db.fitnessDao()).insertSteps(
+                            StepsRepository.insertSteps(
                                 currentTodaySteps,
                                 todayStepsAtLastReboot,
                                 initialSteps
                             )
                         }
                     } else {
-                        if (todaySteps == -1) {
-                            StepsRepository(MainActivity.db.fitnessDao()).insertSteps(
+                        if (todaySteps == 0) {
+                            StepsRepository.insertSteps(
                                 0,
                                 0,
                                 stepsSinceLastReboot
@@ -119,7 +109,7 @@ class StepCounterService : Service() {
                         }
                         else {
                             currentTodaySteps = stepsSinceLastReboot - initialSteps
-                            StepsRepository(MainActivity.db.fitnessDao()).insertSteps(
+                            StepsRepository.insertSteps(
                                 currentTodaySteps,
                                 currentTodaySteps,
                                 initialSteps
@@ -130,18 +120,18 @@ class StepCounterService : Service() {
                     launch {
                         dataStore.getStepGoal.cancellable().collect {
                             if (currentTodaySteps >= it) {
-                                val notification = NotificationCompat.Builder(applicationContext, "fitness")
+                                val stepGoalNotification = NotificationCompat.Builder(applicationContext, "fitness")
                                     .setContentTitle("Obiettivo passi raggiunto!")
-                                    .setContentText("Passi: $currentTodaySteps / $it")
+                                    .setContentText("Passi: $currentTodaySteps/$it")
                                     .setSmallIcon(android.R.drawable.ic_menu_mylocation)
-                                notificationManager.notify(3, notification.build())
+                                notificationManager.notify(3, stepGoalNotification.build())
                             }
                         }
                     }
                 }
             }.launchIn(serviceScope)
 
-        startForeground(2, notification.build())
+        startForeground(2, stepTrackingNotification.build())
     }
 
     private fun stop() {

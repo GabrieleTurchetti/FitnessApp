@@ -10,28 +10,30 @@ import com.example.fitnessapp.R
 import com.example.fitnessapp.Screen
 
 data class BottomNavigationItem(
-    val label : String = "",
-    val icon : ImageVector = Icons.Filled.Home,
-    val route : String = ""
+    val label : String,
+    val icon : ImageVector,
+    val route : String
 ) {
-    @Composable
-    fun bottomNavigationItems() : List<BottomNavigationItem> {
-        return listOf(
-            BottomNavigationItem(
-                label = "Esercizi",
-                icon = ImageVector.vectorResource(R.drawable.ic_fitness_center),
-                route = Screen.Exercises.route
-            ),
-            BottomNavigationItem(
-                label = "Home",
-                icon = Icons.Filled.Home,
-                route = Screen.Home.route
-            ),
-            BottomNavigationItem(
-                label = "Profilo",
-                icon = Icons.Filled.AccountCircle,
-                route = Screen.Profile.route
+    companion object {
+        @Composable
+        fun bottomNavigationItems() : List<BottomNavigationItem> {
+            return listOf(
+                BottomNavigationItem(
+                    label = "Esercizi",
+                    icon = ImageVector.vectorResource(R.drawable.ic_fitness_center),
+                    route = Screen.Exercises.route
+                ),
+                BottomNavigationItem(
+                    label = "Home",
+                    icon = Icons.Filled.Home,
+                    route = Screen.Home.route
+                ),
+                BottomNavigationItem(
+                    label = "Profilo",
+                    icon = Icons.Filled.AccountCircle,
+                    route = Screen.Profile.route
+                )
             )
-        )
+        }
     }
 }

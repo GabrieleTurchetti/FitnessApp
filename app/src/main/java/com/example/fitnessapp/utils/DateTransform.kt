@@ -5,7 +5,7 @@ import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 
-class DateTransformation() : VisualTransformation {
+class DateTransformation : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         return dateFilter(text)
     }
@@ -14,6 +14,7 @@ class DateTransformation() : VisualTransformation {
 fun dateFilter(text: AnnotatedString): TransformedText {
     val trimmed = if (text.text.length >= 8) text.text.substring(0..7) else text.text
     var out = ""
+
     for (i in trimmed.indices) {
         out += trimmed[i]
         if (i % 2 == 1 && i < 4) out += "/"

@@ -1,6 +1,5 @@
 package com.example.fitnessapp.ui.common
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -127,60 +126,17 @@ fun BoxItem1(
                 ),
                 keyboardActions = KeyboardActions(
                     onNext = {
-                        if (item.keyboardType == BoxItem.KeyboardDate) {
-                            if (content.text.length == 8) {
-                                item.onSaveContent(content.text)
-                                isSaved = true
-                            }
-                            else {
-                                content = TextFieldValue(item.content.toString())
-                                Toast.makeText(
-                                    context,
-                                    "Il valore inserito non è valido",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+                        if (item.isValid(content.text)) {
+                            item.onSaveContent(content.text)
+                            isSaved = true
                         }
-                        else if (item.keyboardType == BoxItem.KeyboardNumber) {
-                            if (item.unit == null) {
-                                if (content.text.toInt() < 100) {
-                                    content = TextFieldValue(item.content.toString())
-                                    Toast.makeText(
-                                        context,
-                                        "Il valore inserito non è valido",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                                else {
-                                    item.onSaveContent(content.text)
-                                    isSaved = true
-                                }
-                            }
-                            else {
-                                if (content.text.toInt() in 30..300) {
-                                    item.onSaveContent(content.text)
-                                    isSaved = true
-                                } else {
-                                    content = TextFieldValue(item.content.toString())
-                                    Toast.makeText(
-                                        context,
-                                        "Il valore inserito non è valido",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
-                        }
-                        else if (content.text == "") {
+                        else {
                             content = TextFieldValue(item.content.toString())
                             Toast.makeText(
                                 context,
                                 "Il valore inserito non è valido",
                                 Toast.LENGTH_SHORT
                             ).show()
-                        }
-                        else {
-                            item.onSaveContent(content.text)
-                            isSaved = true
                         }
 
                         focusManager.clearFocus()
@@ -263,61 +219,17 @@ fun BoxItem2(
                     ),
                     keyboardActions = KeyboardActions(
                         onNext = {
-                            if (item.keyboardType == BoxItem.KeyboardDate) {
-                                if (content.length == 8) {
-                                    item.onSaveContent(content)
-                                    isSaved = true
-                                }
-                                else {
-                                    content = item.content.toString()
-                                    Toast.makeText(
-                                        context,
-                                        "Il valore inserito non è valido",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
+                            if (item.isValid(content)) {
+                                item.onSaveContent(content)
+                                isSaved = true
                             }
-                            else if (item.keyboardType == BoxItem.KeyboardNumber) {
-                                if (item.unit == null) {
-                                    if (content.toInt() < 100) {
-                                        content = item.content.toString()
-                                        Toast.makeText(
-                                            context,
-                                            "Il valore inserito non è valido",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                    else {
-                                        item.onSaveContent(content)
-                                        isSaved = true
-                                    }
-                                }
-                                else  {
-                                    if (content.toInt() in 30..300) {
-                                        item.onSaveContent(content)
-                                        isSaved = true
-                                    }
-                                    else {
-                                        content = item.content.toString()
-                                        Toast.makeText(
-                                            context,
-                                            "Il valore inserito non è valido",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                }
-                            }
-                            else if (content == "") {
+                            else {
                                 content = item.content.toString()
                                 Toast.makeText(
                                     context,
                                     "Il valore inserito non è valido",
                                     Toast.LENGTH_SHORT
                                 ).show()
-                            }
-                            else {
-                                item.onSaveContent(content)
-                                isSaved = true
                             }
 
                             focusManager.clearFocus()

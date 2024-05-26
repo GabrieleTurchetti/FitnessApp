@@ -5,7 +5,7 @@ import android.content.Context
 import android.location.Location
 import android.location.LocationManager
 import android.os.Looper
-import com.example.fitnessapp.extentions.hasLocationPermission
+import com.example.fitnessapp.extentions.hasLocationPermissions
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -17,22 +17,22 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 
 class LocationClient(
-    private val context: Context,
-    private val client: FusedLocationProviderClient
+    val context: Context,
+    val client: FusedLocationProviderClient
 ) {
     @SuppressLint("MissingPermission")
     fun getLocationUpdates(interval: Long): Flow<Location> {
         return callbackFlow {
-            if (!context.hasLocationPermission()) {
-                throw LocationException("Missing location permission")
+            if (!context.hasLocationPermissions()) {
+                throw LocationException("Missing location permissions")
             }
 
             val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+            val isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
             val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
 
-            if (!isGpsEnabled && !isNetworkEnabled) {
-                throw LocationException("GPS is disabled")
+            if (!isGPSEnabled && !isNetworkEnabled) {
+                throw LocationException("GPS or network are disabled")
             }
 
             val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, interval).setWaitForAccurateLocation(true).build()
@@ -40,8 +40,11 @@ class LocationClient(
             val locationCallback = object : LocationCallback() {
                 override fun onLocationResult(result: LocationResult) {
                     super.onLocationResult(result)
+
                     result.locations.lastOrNull()?.let { location ->
-                        launch { send(location) }
+                        launch {
+                            send(location)
+                        }
                     }
                 }
             }
@@ -58,5 +61,5 @@ class LocationClient(
         }
     }
 
-    class LocationException(message: String): Exception()
+    class LocationException(message: String): Exception(message)
 }
