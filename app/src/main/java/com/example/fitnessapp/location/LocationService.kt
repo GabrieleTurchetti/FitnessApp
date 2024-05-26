@@ -17,9 +17,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class LocationService : Service() {
-    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     val scope = CoroutineScope(Dispatchers.IO)
-    private lateinit var locationClient: LocationClient
+    lateinit var locationClient: LocationClient
 
     override fun onBind(intent: Intent?): IBinder? {
         return null

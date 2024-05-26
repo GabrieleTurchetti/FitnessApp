@@ -1,6 +1,5 @@
 package com.example.fitnessapp.exercises.musclegroup
 
-import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -10,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.fitnessapp.ui.common.CardGrid
 import com.example.fitnessapp.Screen
-import com.example.fitnessapp.exercises.ExercisesTopAppBar
+import com.example.fitnessapp.exercises.MuscleGroupTopAppBar
 
 @Composable
 fun MuscleGroupScreen(
@@ -19,7 +18,7 @@ fun MuscleGroupScreen(
 ) {
     Scaffold(
         topBar = {
-            ExercisesTopAppBar()
+            MuscleGroupTopAppBar(MuscleGroup.getNameFromId(muscleGroupId))
         },
         content = { padding ->
             Surface(
@@ -27,7 +26,7 @@ fun MuscleGroupScreen(
                 color = MaterialTheme.colorScheme.background
             ) {
                 CardGrid(cards = MuscleGroup.getExercisesFromId(muscleGroupId).map { exercise ->
-                    exercise.setOnExerciseClick({ navController.navigate(Screen.Exercises.route + "/" + muscleGroupId + "/" + exercise.id); Log.d("ID", "${muscleGroupId + exercise.id}")})
+                    exercise.setOnExerciseClick({ navController.navigate(Screen.Exercises.route + "/" + muscleGroupId + "/" + exercise.id) })
                 })
             }
         }

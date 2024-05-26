@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 class StepCounterClient(
     val context: Context
 ) {
-    var sensorManager: SensorManager? = null
+    lateinit var sensorManager: SensorManager
     var stepCounterSensor: Sensor? = null
     val scope = CoroutineScope(Dispatchers.IO)
 
@@ -25,11 +25,11 @@ class StepCounterClient(
     fun getStepCounterUpdates(): Flow<Int> {
         return callbackFlow {
             if (!context.hasActivityRecognitionPermission()) {
-                throw StepCounterExeption("Missing activity recognition permission")
+                throw StepCounterException("Missing activity recognition permission")
             }
 
             sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-            stepCounterSensor = sensorManager?.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+            stepCounterSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
 
             val sensorEventListener = object : SensorEventListener {
                 override fun onSensorChanged(event: SensorEvent?) {
@@ -44,17 +44,17 @@ class StepCounterClient(
                 override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
             }
 
-            sensorManager?.registerListener(
+            sensorManager.registerListener(
                 sensorEventListener,
                 stepCounterSensor,
                 SensorManager.SENSOR_DELAY_NORMAL
             )
 
             awaitClose {
-                sensorManager?.unregisterListener(sensorEventListener)
+                sensorManager.unregisterListener(sensorEventListener)
             }
         }
     }
 
-    class StepCounterExeption(message: String): Exception(message)
+    class StepCounterException(message: String): Exception(message)
 }

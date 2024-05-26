@@ -33,7 +33,7 @@ class LocationRepository {
                             location.latitude.toDouble().round(4, 0.5f),
                             location.longitude.toDouble().round(4, 0.5f)
                         )
-                    }.reduceLocations(5)
+                    }.reduceLocations(6)
                 }
             }
 

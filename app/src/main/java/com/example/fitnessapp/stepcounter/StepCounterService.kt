@@ -23,12 +23,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-@ExperimentalMaterial3Api
-@ExperimentalPermissionsApi
 class StepCounterService : Service() {
-    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     val scope = CoroutineScope(Dispatchers.IO)
-    private lateinit var stepCounterClient: StepCounterClient
+    lateinit var stepCounterClient: StepCounterClient
 
     override fun onBind(intent: Intent?): IBinder? {
         return null

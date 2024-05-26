@@ -138,7 +138,7 @@ sealed class MuscleGroup(
     )
 
     companion object {
-        fun getExercisesFromId(id: String?) : List<Exercise>{
+        fun getExercisesFromId(id: String?): List<Exercise> {
             return when (id){
                 "chest" -> Chest().exercises
                 "shoulders" -> Shoulders().exercises
@@ -149,6 +149,20 @@ sealed class MuscleGroup(
                 "legs" -> Legs().exercises
                 "calves" -> Calves().exercises
                 else -> emptyList()
+            }
+        }
+
+        fun getNameFromId(id: String?) : String {
+            return when (id){
+                "chest" -> Chest().name
+                "shoulders" -> Shoulders().name
+                "biceps" -> Biceps().name
+                "triceps" -> Triceps().name
+                "abs" -> Abs().name
+                "back" -> Back().name
+                "legs" -> Legs().name
+                "calves" -> Calves().name
+                else -> ""
             }
         }
     }
