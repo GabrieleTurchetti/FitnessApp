@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
+// Acts as an intermediary for the calories table operations
 class CaloriesRepository {
     companion object {
         val fitnessDao = FitnessDatabase.db.fitnessDao()

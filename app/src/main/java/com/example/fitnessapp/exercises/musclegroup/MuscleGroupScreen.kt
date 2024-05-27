@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.fitnessapp.ui.common.CardGrid
 import com.example.fitnessapp.Screen
-import com.example.fitnessapp.exercises.MuscleGroupTopAppBar
 
 @Composable
 fun MuscleGroupScreen(
@@ -26,6 +25,7 @@ fun MuscleGroupScreen(
                 color = MaterialTheme.colorScheme.background
             ) {
                 CardGrid(cards = MuscleGroup.getExercisesFromId(muscleGroupId).map { exercise ->
+                    // Route to the section that display the gif of the exercise
                     exercise.setOnExerciseClick({ navController.navigate(Screen.Exercises.route + "/" + muscleGroupId + "/" + exercise.id) })
                 })
             }

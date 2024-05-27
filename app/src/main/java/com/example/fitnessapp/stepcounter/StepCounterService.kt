@@ -5,13 +5,11 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.IBinder
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.core.app.NotificationCompat
 import com.example.fitnessapp.datastore.ProfileSettings
 import com.example.fitnessapp.stepcounter.calories.CaloriesRepository
 import com.example.fitnessapp.stepcounter.steps.StepsRepository
 import com.example.fitnessapp.utils.getBurnedCalories
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -49,6 +47,7 @@ class StepCounterService : Service() {
     }
 
     private fun start() {
+        // Notify that the steps are being tracked
         val stepTrackingNotification = NotificationCompat.Builder(this, "fitness")
             .setContentTitle("Tracciamento passi attivo")
             .setSmallIcon(android.R.drawable.ic_menu_mylocation)
@@ -61,12 +60,14 @@ class StepCounterService : Service() {
                 e.printStackTrace()
             }
             .onEach { stepsSinceLastReboot ->
+                // When a new value of steps is retried then it's saved in the database
                 scope.launch {
                     val todaySteps = StepsRepository.getStepsByDate(LocalDate.now().toString())
                     val todayStepsAtLastReboot = StepsRepository.getTodayStepsAtLastReboot()
                     val initialSteps = StepsRepository.getInitialStepsByDate(LocalDate.now().toString())
                     val dataStore = ProfileSettings(applicationContext)
 
+                    // Based on the value of steps the updated value of calories burned is calculate and then saved in the database
                     launch {
                         dataStore.getHeightAndWeight.cancellable().collect {
                             val height = it.first
@@ -80,7 +81,9 @@ class StepCounterService : Service() {
 
                     var currentTodaySteps = 0
 
+                    // If the device has been rebooted today
                     if (stepsSinceLastReboot <= todaySteps) {
+                        // If the device has just been rebooted
                         if (stepsSinceLastReboot == 0) {
                             currentTodaySteps = todaySteps
                             StepsRepository.insertSteps(
@@ -89,6 +92,7 @@ class StepCounterService : Service() {
                                 initialSteps
                             )
                         }
+                        // If the device has been rebooted today but not now
                         else {
                             currentTodaySteps = stepsSinceLastReboot + todayStepsAtLastReboot
                             StepsRepository.insertSteps(
@@ -97,14 +101,18 @@ class StepCounterService : Service() {
                                 initialSteps
                             )
                         }
-                    } else {
-                        if (todaySteps == 0) {
+                    }
+                    // If the device has been rebooted before today
+                    else {
+                        // When a new day has just started
+                        if (todaySteps == -1) {
                             StepsRepository.insertSteps(
                                 0,
                                 0,
                                 stepsSinceLastReboot
                             )
                         }
+                        // During the rest of the day
                         else {
                             currentTodaySteps = stepsSinceLastReboot - initialSteps
                             StepsRepository.insertSteps(
@@ -115,6 +123,7 @@ class StepCounterService : Service() {
                         }
                     }
 
+                    // Send a notification when the user reaches its daily step goal
                     launch {
                         dataStore.getStepGoal.cancellable().collect {
                             if (currentTodaySteps >= it) {
@@ -129,6 +138,7 @@ class StepCounterService : Service() {
                 }
             }.launchIn(serviceScope)
 
+        // Start the foreground step counter service
         startForeground(2, stepTrackingNotification.build())
     }
 

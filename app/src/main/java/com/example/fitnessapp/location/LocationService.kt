@@ -27,6 +27,7 @@ class LocationService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        // Create the instance that acts as a listener for the locations values
         locationClient = LocationClient(
             applicationContext,
             LocationServices.getFusedLocationProviderClient(applicationContext)
@@ -43,6 +44,7 @@ class LocationService : Service() {
     }
 
     private fun start() {
+        // Notify that the current location is being tracked
         val locationTrackingNotification = NotificationCompat.Builder(this, "fitness")
             .setContentTitle("Tracciamento percorso attivo")
             .setSmallIcon(android.R.drawable.ic_menu_mylocation)
@@ -54,6 +56,7 @@ class LocationService : Service() {
                 e.printStackTrace()
             }
             .onEach { location ->
+                // When a new location is retried then it's saved in the database
                 scope.launch {
                     val lastLocation = LocationRepository.getLastLocation()
                     val currentLocation = LatLng(location.latitude.round(4, 0.5f), location.longitude.round(4, 0.5f))
@@ -61,6 +64,7 @@ class LocationService : Service() {
                 }
             }.launchIn(serviceScope)
 
+        // Start the foreground location service
         startForeground(1, locationTrackingNotification.build())
     }
 

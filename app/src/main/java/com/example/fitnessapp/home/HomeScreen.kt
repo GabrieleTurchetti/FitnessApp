@@ -64,15 +64,12 @@ fun HomeScreen(
     var kilometersTravelled by remember { mutableStateOf(0.0) }
 
     LaunchedEffect(date){
+        // Get the values of steps, calories and kilometers travelled from the database every second
         while (true) {
-            steps = StepsRepository.getStepsByDate(date.value)
+            var newSteps = StepsRepository.getStepsByDate(date.value)
+            if (newSteps == -1) newSteps = 0
+            steps = newSteps
             calories = CaloriesRepository.getCaloriesByDate(date.value)
-            delay(1000)
-        }
-    }
-
-    LaunchedEffect(date){
-        while (true) {
             kilometersTravelled = LocationRepository.getLocationsByDate(date.value).kilometersTravelled().round(2, 1f)
             delay(1000)
         }

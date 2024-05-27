@@ -26,7 +26,6 @@ import com.example.fitnessapp.exercises.musclegroup.MuscleGroupScreen
 import com.example.fitnessapp.home.HomeScreen
 import com.example.fitnessapp.home.map.MapScreen
 import com.example.fitnessapp.profile.ProfileScreen
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 @Composable
 fun BottomNavigationBar() {

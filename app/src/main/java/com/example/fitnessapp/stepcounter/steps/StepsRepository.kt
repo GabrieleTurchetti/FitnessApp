@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
+// Acts as an intermediary for the steps table operations
 class StepsRepository {
     companion object {
         val fitnessDao = FitnessDatabase.db.fitnessDao()
@@ -26,7 +27,7 @@ class StepsRepository {
                 val steps = fitnessDao.getStepsByDate(date = date)
 
                 if (steps.isEmpty()) {
-                    0
+                    -1
                 } else {
                     steps.first().steps
                 }
@@ -37,7 +38,7 @@ class StepsRepository {
             val todaySteps = fitnessDao.getStepsByDate(date = today)
 
             if (todaySteps.isEmpty()) {
-                0
+                -1
             } else {
                 todaySteps.first().stepsAtLastReboot
             }
@@ -47,7 +48,7 @@ class StepsRepository {
             val dateStepCounter = fitnessDao.getStepsByDate(date = date)
 
             if (dateStepCounter.isEmpty()) {
-                0
+                -1
             } else {
                 dateStepCounter.first().initialSteps
             }

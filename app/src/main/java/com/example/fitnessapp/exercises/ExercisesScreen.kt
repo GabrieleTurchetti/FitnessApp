@@ -24,6 +24,7 @@ fun ExercisesScreen(
                 modifier = Modifier.padding(padding),
                 color = MaterialTheme.colorScheme.background
             ) {
+                // Route to the section of the muscle group
                 val onMuscleGroupClick = { muscleGroupId: String -> navController.navigate(Screen.Exercises.route + "/" + muscleGroupId) }
 
                 CardGrid(cards = listOf(

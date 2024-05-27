@@ -35,12 +35,14 @@ class LocationClient(
                 throw LocationException("GPS or network are disabled")
             }
 
+            // Request the location with the max accuracy possible
             val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, interval).setWaitForAccurateLocation(true).build()
 
             val locationCallback = object : LocationCallback() {
                 override fun onLocationResult(result: LocationResult) {
                     super.onLocationResult(result)
 
+                    // When a location is retrieved then it's sent to the location service
                     result.locations.lastOrNull()?.let { location ->
                         launch {
                             send(location)
@@ -55,6 +57,7 @@ class LocationClient(
                 Looper.getMainLooper()
             )
 
+            // When the flow is closed then the callback is removed
             awaitClose {
                 client.removeLocationUpdates(locationCallback)
             }

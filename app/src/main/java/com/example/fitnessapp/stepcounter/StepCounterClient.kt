@@ -36,6 +36,7 @@ class StepCounterClient(
                     if (event == null) return
                     val stepsSinceLastReboot = event.values[0].toInt()
 
+                    // When an updated value of steps is retrieved it's sent to the step counter service
                     scope.launch {
                         send(stepsSinceLastReboot)
                     }
@@ -50,6 +51,7 @@ class StepCounterClient(
                 SensorManager.SENSOR_DELAY_NORMAL
             )
 
+            // When the flow is closed the callback is removed
             awaitClose {
                 sensorManager.unregisterListener(sensorEventListener)
             }

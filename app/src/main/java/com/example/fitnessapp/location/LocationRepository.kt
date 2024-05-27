@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
+// Acts as an intermediary for the locations table operations
 class LocationRepository {
     companion object {
         val fitnessDao = FitnessDatabase.db.fitnessDao()

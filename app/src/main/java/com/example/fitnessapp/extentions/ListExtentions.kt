@@ -5,6 +5,7 @@ import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.sin
 
+// Calculate the sum of the distances for each LatLng objects in the list
 fun List<LatLng>.kilometersTravelled(): Double {
     val earthRadius = 6371
     var kilometersTravelled = 0.0
@@ -20,6 +21,7 @@ fun List<LatLng>.kilometersTravelled(): Double {
     return kilometersTravelled
 }
 
+// Reduce the size of the LatLng list for a better linearity of the graph
 fun List<LatLng>.reduceLocations(step: Int): List<LatLng> {
     return this.slice(0..this.size - 1 step step)
 }

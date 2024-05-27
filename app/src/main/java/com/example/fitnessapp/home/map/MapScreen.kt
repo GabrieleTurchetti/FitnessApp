@@ -24,7 +24,9 @@ import java.time.LocalDate
 fun MapScreen(
     date: String?
 ) {
-    val lastLocation by remember { mutableStateOf(LatLng(0.0, 0.0)) }
+    // Last known location
+    val lastLocation by remember { mutableStateOf(LatLng(180.0, 90.0)) }
+    // List of locations that will be used for the graph on the map
     var locations by remember { mutableStateOf(listOf<LatLng>()) }
 
     val cameraPositionState = rememberCameraPositionState {
@@ -35,11 +37,12 @@ fun MapScreen(
         while (true) {
             val newLocations = LocationRepository.getLocationsByDate(date ?: LocalDate.now().toString())
 
-            if (!newLocations.isEmpty() && newLocations.size != locations.size)  {
-                cameraPositionState.move(CameraUpdateFactory.newLatLng(newLocations.last()))
+            // Update the camera position if the location change
+            if (newLocations.isNotEmpty() && newLocations.size != locations.size)  {
+                cameraPositionState.animate(CameraUpdateFactory.newLatLng(newLocations.last()))
                 locations = newLocations
             }
-            
+
             delay(1000)
         }
     }

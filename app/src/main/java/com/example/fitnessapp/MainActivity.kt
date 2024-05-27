@@ -26,6 +26,7 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Shared channel for all the notifications
         val channel = NotificationChannel(
             "fitness",
             "Fitness",
@@ -33,7 +34,7 @@ class MainActivity : ComponentActivity() {
         )
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
-        FitnessDatabase.init(applicationContext)
+        FitnessDatabase.init(applicationContext) // Initialize the database
 
         setContent {
             FitnessAppTheme {
@@ -51,6 +52,7 @@ class MainActivity : ComponentActivity() {
                 DisposableEffect(lifecycleOwner) {
                     val observer = LifecycleEventObserver { _, event ->
                         if (event == Lifecycle.Event.ON_START) {
+                            // Send the request of all the permissions required that aren't already granted
                             permissionsState.launchMultiplePermissionRequest()
                         }
                     }
@@ -65,6 +67,7 @@ class MainActivity : ComponentActivity() {
                     when (it.permission) {
                         Manifest.permission.ACTIVITY_RECOGNITION -> {
                             if (it.status.isGranted) {
+                                // Launch the intent to start the step counter service
                                 Intent(context, StepCounterService::class.java).apply {
                                     action = StepCounterService.ACTION_START
                                     context.startService(this)
@@ -73,6 +76,7 @@ class MainActivity : ComponentActivity() {
                         }
                         Manifest.permission.ACCESS_FINE_LOCATION -> {
                             if (it.status.isGranted) {
+                                // Launch the intent to start the location service
                                 Intent(context, LocationService::class.java).apply {
                                     action = LocationService.ACTION_START
                                     context.startService(this)
