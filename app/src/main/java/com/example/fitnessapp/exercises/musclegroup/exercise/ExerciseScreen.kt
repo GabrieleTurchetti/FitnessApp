@@ -42,7 +42,7 @@ fun ExerciseScreen(
             contentScale = ContentScale.Crop,
             painter = rememberImagePainter(
                 imageLoader = imageLoader,
-                data = Exercise.getGifResourceFromId(exerciseId = exerciseId),
+                data = Exercise.getGifResourceFromId(exerciseId = exerciseId ?: ""),
                 builder = {
                     size(OriginalSize)
                 }

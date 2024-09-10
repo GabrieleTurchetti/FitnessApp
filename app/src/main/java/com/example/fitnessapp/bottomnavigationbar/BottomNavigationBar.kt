@@ -73,28 +73,19 @@ fun BottomNavigationBar() {
             startDestination = Screen.Home.route,
             modifier = Modifier.padding(paddingValues = paddingValues)) {
             composable(Screen.Exercises.route) {
-                ExercisesScreen(
-                    navController
-                )
+                ExercisesScreen(navController)
             }
             composable(Screen.Home.route) {
-                HomeScreen(
-                    navController
-                )
+                HomeScreen(navController)
             }
             composable(
                 Screen.Map.route,
-                arguments = listOf(
-                    navArgument("date") { type = NavType.StringType }
-                )
+                arguments = listOf(navArgument("date") { type = NavType.StringType })
             ) { backStackEntry ->
-                MapScreen(
-                    backStackEntry.arguments?.getString("date")
-                )
+                MapScreen(backStackEntry.arguments?.getString("date"))
             }
             composable(
-                Screen.Profile.route,
-
+                Screen.Profile.route
             ) {
                 ProfileScreen()
             }
@@ -109,13 +100,10 @@ fun BottomNavigationBar() {
             }
             composable(
                 Screen.Exercise.route,
-                arguments = listOf(
-                    navArgument("exerciseId") { type = NavType.StringType }
+                arguments = listOf(navArgument("exerciseId") { type = NavType.StringType }
                 )
             ) { backStackEntry ->
-                ExerciseScreen(
-                    backStackEntry.arguments?.getString("exerciseId")
-                )
+                ExerciseScreen(backStackEntry.arguments?.getString("exerciseId"))
             }
         }
     }

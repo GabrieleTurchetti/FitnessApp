@@ -1,6 +1,6 @@
 package com.example.fitnessapp.utils
 
-fun String.camelCaseToSnakeCase(): String {
+fun camelCaseToSnakeCase(text: String): String {
     val pattern = "(?<=.)[A-Z]".toRegex()
-    return this.replace(pattern, "_$0").lowercase()
+    return text.replace(pattern, "_$0").lowercase()
 }

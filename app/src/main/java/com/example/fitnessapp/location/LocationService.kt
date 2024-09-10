@@ -18,7 +18,6 @@ import kotlinx.coroutines.launch
 
 class LocationService : Service() {
     val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    val scope = CoroutineScope(Dispatchers.IO)
     lateinit var locationClient: LocationClient
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -57,7 +56,7 @@ class LocationService : Service() {
             }
             .onEach { location ->
                 // When a new location is retried then it's saved in the database
-                scope.launch {
+                serviceScope.launch {
                     val lastLocation = LocationRepository.getLastLocation()
                     val currentLocation = LatLng(location.latitude.round(4, 0.5f), location.longitude.round(4, 0.5f))
                     if (lastLocation != currentLocation) LocationRepository.insertLocation(currentLocation)

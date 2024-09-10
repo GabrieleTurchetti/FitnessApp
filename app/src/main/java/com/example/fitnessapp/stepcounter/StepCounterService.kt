@@ -23,7 +23,6 @@ import java.time.LocalDate
 
 class StepCounterService : Service() {
     val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    val scope = CoroutineScope(Dispatchers.IO)
     lateinit var stepCounterClient: StepCounterClient
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -61,7 +60,7 @@ class StepCounterService : Service() {
             }
             .onEach { stepsSinceLastReboot ->
                 // When a new value of steps is retried then it's saved in the database
-                scope.launch {
+                serviceScope.launch {
                     val todaySteps = StepsRepository.getStepsByDate(LocalDate.now().toString())
                     val todayStepsAtLastReboot = StepsRepository.getTodayStepsAtLastReboot()
                     val initialSteps = StepsRepository.getInitialStepsByDate(LocalDate.now().toString())

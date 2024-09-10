@@ -24,9 +24,9 @@ data class Exercise(
     companion object {
         // Get the resource id of the gif related to the exercise
         @Composable
-        fun getGifResourceFromId(exerciseId: String?): Int {
+        fun getGifResourceFromId(exerciseId: String): Int {
             return LocalContext.current.resources.getIdentifier(
-                exerciseId?.camelCaseToSnakeCase() + "_gif",
+                camelCaseToSnakeCase(exerciseId) + "_gif",
                 "drawable",
                 LocalContext.current.packageName)
         }

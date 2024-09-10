@@ -24,13 +24,12 @@ import java.time.LocalDate
 fun MapScreen(
     date: String?
 ) {
-    // Last known location
-    val lastLocation by remember { mutableStateOf(LatLng(180.0, 90.0)) }
-    // List of locations that will be used for the graph on the map
+    // List of locations that will be used as polyline points on the map
     var locations by remember { mutableStateOf(listOf<LatLng>()) }
+    val initialLocation = LatLng(0.0, 0.0)
 
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(lastLocation, 15f)
+        position = CameraPosition(initialLocation, 15f, 0f, 0f)
     }
 
     LaunchedEffect(Unit){
@@ -39,7 +38,7 @@ fun MapScreen(
 
             // Update the camera position if the location change
             if (newLocations.isNotEmpty() && newLocations.size != locations.size)  {
-                cameraPositionState.animate(CameraUpdateFactory.newLatLng(newLocations.last()))
+                cameraPositionState.move(CameraUpdateFactory.newCameraPosition(CameraPosition(newLocations.last(), 15f, 0f, 0f)))
                 locations = newLocations
             }
 

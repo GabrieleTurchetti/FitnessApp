@@ -152,7 +152,7 @@ sealed class MuscleGroup(
             }
         }
 
-        fun getNameFromId(id: String?) : String {
+        fun getNameFromId(id: String?): String {
             return when (id){
                 "chest" -> Chest().name
                 "shoulders" -> Shoulders().name
