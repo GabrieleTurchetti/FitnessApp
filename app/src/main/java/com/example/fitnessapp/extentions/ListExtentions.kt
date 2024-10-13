@@ -23,7 +23,7 @@ fun List<LatLng>.kilometersTravelled(): Double {
 
 // Reduce the size of the LatLng list for a better linearity of the graph
 fun List<LatLng>.reduceLocations(step: Int): List<LatLng> {
-    val partitionedList: List<List<LatLng>> = this.withIndex()
+    val partitionedList: List<List<LatLng>> = this.withIndex() 
         .groupBy { it.index / step }
         .map { it.value.map { it.value } }
     val newList = mutableListOf<LatLng>()
